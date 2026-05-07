@@ -366,7 +366,7 @@ async function loadPredictions(){
       container.innerHTML=`<div class="pred-grid">${predicted.map((r,i)=>{
         const fc=r.firstCrossing;
         const when=fc.hoursFrom===0?"Within the hour":`In ~${fc.hoursFrom} hour${fc.hoursFrom!==1?"s":""}`;
-        const timeStr=fc.time.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit"});
+        const timeStr=fc.time.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit",hour12:true});
         return `<div class="pred-card" style="animation-delay:${i*80}ms">
           <div class="pred-city">${r.city}</div>
           <div class="pred-meta">Forecast wind <span>${fc.wind.toFixed(1)} km/h</span> · Threshold <span>${r.threshold} km/h</span></div>
