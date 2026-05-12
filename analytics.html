@@ -1,1 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>OceanGuard — Analytics</title>
+<link rel="stylesheet" href="style.css"/>
+<style>
+.city-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.5rem;}
+.ctab{font-family:var(--fm);font-size:11px;padding:5px 12px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--tm);cursor:pointer;transition:all .15s;white-space:nowrap;}
+.ctab:hover{border-color:var(--glow);color:var(--ts);}
+.ctab.active{background:var(--cyan-d);border-color:var(--glow);color:var(--cyan);}
 
+.trend-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:1.75rem;}
+.trend-top{padding:1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.trend-body{padding:1.5rem;}
+.chart-area{width:100%;height:200px;}
+.chart-svg{width:100%;height:100%;}
+.grid-line{stroke:rgba(255,255,255,0.05);stroke-width:1;}
+.axis-lbl{font-family:'DM Mono',monospace;font-size:10px;fill:#3d5270;}
+.t-line{fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
+.t-area{fill-opacity:.15;}
+.thresh{stroke:var(--amber);stroke-width:1.5;stroke-dasharray:5 4;fill:none;}
+.chart-leg{display:flex;align-items:center;gap:16px;margin-top:10px;font-family:var(--fm);font-size:11px;color:var(--tm);}
+.leg-i{display:flex;align-items:center;gap:5px;}
+.leg-dot{width:8px;height:8px;border-radius:50%;}
+.leg-dsh{width:16px;border-top:2px dashed var(--amber);}
+#t-summary{margin-left:auto;color:var(--ts);}
+
+.compare-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.75rem;}
+.city-stat-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:1rem 1.25rem;transition:border-color .2s;}
+.city-stat-card:hover{border-color:var(--glow);}
+.cs-name{font-size:13px;font-weight:600;margin-bottom:.6rem;}
+.cs-row{display:flex;justify-content:space-between;margin-bottom:.3rem;}
+.cs-label{font-family:var(--fm);font-size:11px;color:var(--tm);}
+.cs-value{font-family:var(--fm);font-size:11px;color:var(--ts);}
+.cs-value.hot{color:var(--amber);}
+.cs-bar-wrap{margin-top:.6rem;}
+.cs-bar-track{height:3px;background:rgba(255,255,255,.05);border-radius:2px;}
+.cs-bar-fill{height:100%;border-radius:2px;transition:width .6s ease;}
+
+.weekly-table-wrap{overflow-x:auto;}
+
+@media(max-width:900px){.compare-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:600px){.compare-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<script src="nav.js"></script>
+<main class="og-main">
+  <div id="og-loading">
+    <div class="og-wave"><span></span><span></span><span></span><span></span><span></span></div>
+    <div>Loading analytics data...</div>
+  </div>
+  <div id="og-content" style="display:none">
+    <div class="og-page-header">
+      <div class="og-page-title">Analytics</div>
+      <div class="og-page-sub">7-day wind patterns · city comparisons · weekly summaries</div>
+    </div>
+
+    <div class="og-sec">7-day wind trend — select city</div>
+    <div class="city-tabs" id="city-tabs"></div>
+    <div class="trend-card">
+      <div class="trend-top">
+        <div class="og-sec" style="margin-bottom:0" id="trend-city-label">—</div>
+        <span id="t-summary"></span>
+      </div>
+      <div class="trend-body">
+        <div class="chart-area">
+          <svg class="chart-svg" id="trend-svg" viewBox="0 0 760 200" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="aG" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#00c8b4" stop-opacity=".25"/>
+                <stop offset="100%" stop-color="#00c8b4" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <g id="g-lines"></g><g id="y-labs"></g><g id="x-labs"></g>
+            <path id="a-path" fill="url(#aG)"/>
+            <line id="t-line" class="thresh" x1="0" x2="0" y1="0" y2="0"/>
+            <path id="l-path" class="t-line" style="stroke:var(--cyan)"/>
+            <g id="d-pts"></g>
+          </svg>
+        </div>
+        <div class="chart-leg">
+          <div class="leg-i"><div class="leg-dot" style="background:var(--cyan)"></div><span>Daily avg wind (km/h)</span></div>
+          <div class="leg-i"><div class="leg-dsh"></div><span>Alert threshold</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="og-sec">All cities — 7-day overview</div>
+    <div class="compare-grid" id="compare-grid"></div>
+
+    <div class="og-sec">Weekly performance table</div>
+    <div class="og-card" style="margin-bottom:1.75rem">
+      <div class="weekly-table-wrap">
+        <table class="og-table" id="weekly-table">
+          <thead>
+            <tr>
+              <th>City</th><th>Threshold</th>
+              <th>7-day avg</th><th>Peak wind</th>
+              <th>Alert days</th><th>Coast</th><th>Trend</th>
+            </tr>
+          </thead>
+          <tbody id="weekly-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="og-footer">
+  Data · <span>Open-Meteo</span> &nbsp;|&nbsp; Pipeline · <span>n8n</span> &nbsp;|&nbsp; Built by <span>OceanGuard</span>
+  <div class="og-footer-links">
+    <a href="index.html">Dashboard</a>
+    <a href="alerts.html">Alert History</a>
+    <a href="about.html">About</a>
+  </div>
+</footer>
+
+<script>
+const SHEET="1LHddh6bg9M0hskAypVRr_iF5h4SLzM1yw1vuFetn51s";
+const URL=`https://docs.google.com/spreadsheets/d/${SHEET}/gviz/tq?tqx=out:json&sheet=Sheet1`;
+const CITIES=[
+  {city:"Mumbai",threshold:14,coast:"Arabian Sea"},
+  {city:"Goa",threshold:13,coast:"Arabian Sea"},
+  {city:"Mangalore",threshold:13,coast:"Arabian Sea"},
+  {city:"Kochi",threshold:12,coast:"Arabian Sea"},
+  {city:"Thiruvananthapuram",threshold:11,coast:"Arabian Sea"},
+  {city:"Pondicherry",threshold:12,coast:"Bay of Bengal"},
+  {city:"Chennai",threshold:12,coast:"Bay of Bengal"},
+  {city:"Visakhapatnam",threshold:13,coast:"Bay of Bengal"},
+  {city:"Kolkata",threshold:12,coast:"Bay of Bengal"}
+];
+const TH=Object.fromEntries(CITIES.map(c=>[c.city,c.threshold]));
+const COAST=Object.fromEntries(CITIES.map(c=>[c.city,c.coast]));
+function isCity(n){return n&&typeof n==="string"&&!/^\d{4}-\d{2}-\d{2}/.test(n)&&n.length>=2&&n.length<=30;}
+const BAR_C={NORMAL:"#00d98b",WATCH:"#00c8b4",WARNING:"#f0a500",EMERGENCY:"#f04060"};
+
+let hist={},sel=null;
+
+function renderTrend(city){
+  const d=hist[city];if(!d||!d.length)return;
+  sel=city;const th=TH[city]||12;
+  document.querySelectorAll(".ctab").forEach(b=>b.classList.toggle("active",b.dataset.city===city));
+  document.getElementById("trend-city-label").textContent=city;
+  const W=760,H=200,pL=36,pR=18,pT=14,pB=26,cW=W-pL-pR,cH=H-pT-pB;
+  const ws=d.map(x=>x.w),mx=Math.max(...ws,th*1.4);
+  const xp=i=>pL+(i/Math.max(d.length-1,1))*cW;
+  const yp=v=>pT+cH-(v/mx)*cH;
+  let gH="",yH="",xH="";
+  [0,.25,.5,.75,1].forEach(f=>{const v=mx*f,y=yp(v);gH+=`<line class="grid-line" x1="${pL}" x2="${W-pR}" y1="${y}" y2="${y}"/>`;yH+=`<text class="axis-lbl" x="${pL-5}" y="${y+3}" text-anchor="end">${v.toFixed(0)}</text>`;});
+  d.forEach((x,i)=>{const l=new Date(x.date+"T00:00:00").toLocaleDateString("en-IN",{day:"numeric",month:"short"});xH+=`<text class="axis-lbl" x="${xp(i).toFixed(1)}" y="${H-4}" text-anchor="middle">${l}</text>`;});
+  document.getElementById("g-lines").innerHTML=gH;document.getElementById("y-labs").innerHTML=yH;document.getElementById("x-labs").innerHTML=xH;
+  const pts=d.map((x,i)=>`${xp(i).toFixed(1)},${yp(x.w).toFixed(1)}`);
+  document.getElementById("l-path").setAttribute("d","M"+pts.join("L"));
+  document.getElementById("a-path").setAttribute("d",`M${pL},${pT+cH} L${pts.join("L")} L${xp(d.length-1)},${pT+cH} Z`);
+  document.getElementById("d-pts").innerHTML=d.map((x,i)=>{const c=x.w>=th?"#f0a500":"#00c8b4";return `<circle cx="${xp(i).toFixed(1)}" cy="${yp(x.w).toFixed(1)}" r="8" fill="${c}" fill-opacity=".25"/><circle cx="${xp(i).toFixed(1)}" cy="${yp(x.w).toFixed(1)}" r="4" fill="${c}"/>`;}).join("");
+  const ty=yp(th);const tl=document.getElementById("t-line");
+  tl.setAttribute("x1",pL);tl.setAttribute("x2",W-pR);tl.setAttribute("y1",ty);tl.setAttribute("y2",ty);
+  const avg=ws.reduce((a,b)=>a+b,0)/ws.length;
+  const trend=ws.length>1?(ws[ws.length-1]>ws[0]?"↑ Rising":"↓ Easing"):"—";
+  const ad=d.filter(x=>x.w>=th).length;
+  document.getElementById("t-summary").textContent=`Avg ${avg.toFixed(1)} km/h · ${trend} · ${ad} alert day${ad!==1?"s":""}`;
+}
+
+async function loadData(){
+  const r=await fetch(URL);const t=await r.text();
+  const j=JSON.parse(t.match(/google\.visualization\.Query\.setResponse\(([\s\S]*?)\);/)[1]);
+  const rows=j.table.rows;
+  const hm={};const cut=new Date();cut.setDate(cut.getDate()-7);
+  rows.forEach(row=>{
+    const c=row.c;if(!c||!c[1]?.v)return;
+    const city=String(c[1].v).trim();if(!isCity(city))return;
+    const wind=parseFloat(c[2]?.v)||0,ts=c[7]?.v||"";
+    if(ts){const d=new Date(ts);if(d>=cut){const ds=ts.slice(0,10);if(!hm[city])hm[city]={};if(!hm[city][ds])hm[city][ds]=[];hm[city][ds].push(wind);}}
+  });
+  hist={};
+  Object.keys(hm).forEach(city=>{hist[city]=Object.keys(hm[city]).sort().map(date=>({date,w:hm[city][date].reduce((a,b)=>a+b,0)/hm[city][date].length}));});
+
+  // City tabs
+  const tcs=CITIES.map(c=>c.city).filter(c=>hist[c]&&hist[c].length);
+  document.getElementById("city-tabs").innerHTML=tcs.map(city=>`<button class="ctab" data-city="${city}" onclick="renderTrend('${city}')">${city}</button>`).join("");
+  if(!sel||!hist[sel])sel=tcs[0];
+  if(sel)renderTrend(sel);
+
+  // City stat cards
+  const glmax=Math.max(...CITIES.map(c=>{const d=hist[c.city];return d&&d.length?Math.max(...d.map(x=>x.w)):0;}),1);
+  document.getElementById("compare-grid").innerHTML=CITIES.map(c=>{
+    const d=hist[c.city]||[];
+    const ws=d.map(x=>x.w);
+    const avg=ws.length?ws.reduce((a,b)=>a+b,0)/ws.length:0;
+    const peak=ws.length?Math.max(...ws):0;
+    const ad=d.filter(x=>x.w>=c.threshold).length;
+    const tr=ws.length>1?(ws[ws.length-1]>ws[0]?"↑ Rising":"↓ Easing"):"No data";
+    const pct=Math.round((peak/glmax)*100);
+    const col=peak>=c.threshold*2?"#f04060":peak>=c.threshold*1.5?"#f0a500":peak>=c.threshold?"#00c8b4":"#00d98b";
+    return `<div class="city-stat-card">
+      <div class="cs-name">${c.city}</div>
+      <div class="cs-row"><span class="cs-label">7-day avg</span><span class="cs-value ${avg>=c.threshold?"hot":""}">${avg.toFixed(1)} km/h</span></div>
+      <div class="cs-row"><span class="cs-label">Peak wind</span><span class="cs-value ${peak>=c.threshold?"hot":""}">${peak.toFixed(1)} km/h</span></div>
+      <div class="cs-row"><span class="cs-label">Alert days</span><span class="cs-value ${ad>0?"hot":""}">${ad} / 7</span></div>
+      <div class="cs-row"><span class="cs-label">Trend</span><span class="cs-value">${tr}</span></div>
+      <div class="cs-bar-wrap"><div class="cs-bar-track"><div class="cs-bar-fill" style="width:${pct}%;background:${col}"></div></div></div>
+    </div>`;
+  }).join("");
+
+  // Weekly table
+  document.getElementById("weekly-body").innerHTML=CITIES.map(c=>{
+    const d=hist[c.city]||[];const ws=d.map(x=>x.w);
+    const avg=ws.length?ws.reduce((a,b)=>a+b,0)/ws.length:0;
+    const peak=ws.length?Math.max(...ws):0;
+    const ad=d.filter(x=>x.w>=c.threshold).length;
+    const tr=ws.length>1?(ws[ws.length-1]>ws[0]?"↑":"↓"):"—";
+    const avgCls=avg>=c.threshold?"sa":"sc";
+    return `<tr><td>${c.city}</td><td>${c.threshold} km/h</td><td class="${avgCls}">${avg.toFixed(1)}</td><td class="${peak>=c.threshold?"sa":"sc"}">${peak.toFixed(1)}</td><td class="${ad>0?"sa":"sc"}">${ad}</td><td style="color:var(--tm)">${c.coast}</td><td style="color:var(--ts)">${tr}</td></tr>`;
+  }).join("");
+
+  const ots=document.getElementById("og-timestamp");if(ots)ots.textContent="Analytics loaded";
+  document.getElementById("og-loading").style.display="none";
+  document.getElementById("og-content").style.display="block";
+}
+loadData().catch(e=>{console.error(e);document.getElementById("og-loading").innerHTML=`<p style="color:var(--red)">Could not load data.</p>`;});
+</script>
+</body>
+</html>
