@@ -3,45 +3,9 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>OceanGuard — India Coastal Monitor</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+<title>OceanGuard — Dashboard</title>
+<link rel="stylesheet" href="style.css"/>
 <style>
-:root{
-  --deep:#060d1a;--panel:#0d1b30;--panel-alt:#101f35;
-  --border:rgba(255,255,255,0.07);--glow:rgba(0,200,180,0.25);
-  --cyan:#00c8b4;--cyan-d:rgba(0,200,180,0.12);--cyan-m:rgba(0,200,180,0.4);
-  --amber:#f0a500;--amber-d:rgba(240,165,0,0.12);
-  --red:#f04060;--red-d:rgba(240,64,96,0.12);
-  --green:#00d98b;--green-d:rgba(0,217,139,0.1);
-  --purple:#a78bfa;--purple-d:rgba(167,139,250,0.1);
-  --tx:#e8f0fa;--ts:#7a95b8;--tm:#3d5270;
-  --fd:'Syne',sans-serif;--fm:'DM Mono',monospace;
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:var(--fd);background:var(--deep);color:var(--tx);min-height:100vh;overflow-x:hidden;}
-body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,200,180,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,200,180,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
-
-header{position:sticky;top:0;z-index:100;background:rgba(6,13,26,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:64px;}
-.brand{display:flex;align-items:center;gap:14px;}
-.brand-icon{width:38px;height:38px;border:1px solid var(--glow);border-radius:10px;display:flex;align-items:center;justify-content:center;background:var(--cyan-d);position:relative;overflow:hidden;}
-.brand-icon::after{content:'';position:absolute;bottom:-4px;left:-4px;right:-4px;height:12px;background:var(--cyan-m);border-radius:50%;filter:blur(6px);animation:waveGlow 3s ease-in-out infinite;}
-@keyframes waveGlow{0%,100%{opacity:.5;transform:scaleX(.9);}50%{opacity:1;transform:scaleX(1.1);}}
-.brand-icon svg{width:20px;height:20px;stroke:var(--cyan);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;position:relative;z-index:1;}
-.brand-name{font-size:17px;font-weight:700;letter-spacing:-.02em;}
-.brand-sub{font-size:11px;color:var(--tm);font-family:var(--fm);font-weight:300;letter-spacing:.04em;}
-.hdr-r{display:flex;align-items:center;gap:10px;}
-#last-updated{font-family:var(--fm);font-size:11px;color:var(--tm);letter-spacing:.04em;}
-.live-pill{display:flex;align-items:center;gap:7px;background:var(--green-d);border:1px solid rgba(0,217,139,0.2);border-radius:999px;padding:4px 12px;font-family:var(--fm);font-size:11px;color:var(--green);letter-spacing:.04em;}
-.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s ease-in-out infinite;}
-@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(0,217,139,.6);}50%{opacity:.7;box-shadow:0 0 0 4px rgba(0,217,139,0);}}
-.icon-btn{display:flex;align-items:center;gap:6px;background:var(--cyan-d);border:1px solid var(--glow);border-radius:8px;padding:6px 12px;font-family:var(--fm);font-size:11px;color:var(--cyan);letter-spacing:.04em;cursor:pointer;transition:all .2s;}
-.icon-btn:hover{background:rgba(0,200,180,0.2);box-shadow:0 0 16px rgba(0,200,180,0.15);}
-.icon-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-
-main{max-width:1200px;margin:0 auto;padding:2rem 2rem 4rem;position:relative;z-index:1;}
-
 .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.75rem;}
 .metric{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:1.25rem 1.5rem;position:relative;overflow:hidden;transition:border-color .2s;}
 .metric:hover{border-color:var(--glow);}
@@ -52,60 +16,38 @@ main{max-width:1200px;margin:0 auto;padding:2rem 2rem 4rem;position:relative;z-i
 .metric-value.cyan{color:var(--cyan);}.metric-value.amber{color:var(--amber);}.metric-value.red{color:var(--red);}.metric-value.green{color:var(--green);}
 .metric-sub{font-family:var(--fm);font-size:11px;color:var(--tm);margin-top:.4rem;}
 
-.sec{font-size:11px;font-weight:600;color:var(--tm);text-transform:uppercase;letter-spacing:.12em;margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
-.sec::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent);}
-
-/* AI BRIEFING */
 .briefing-card{background:var(--panel);border:1px solid rgba(167,139,250,0.2);border-radius:14px;padding:1.5rem;margin-bottom:1.75rem;position:relative;overflow:hidden;}
 .briefing-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(167,139,250,0.5),transparent);}
 .briefing-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
 .briefing-title{display:flex;align-items:center;gap:8px;font-family:var(--fm);font-size:11px;color:var(--purple);letter-spacing:.08em;text-transform:uppercase;}
 .briefing-title svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
 .briefing-time{font-family:var(--fm);font-size:11px;color:var(--tm);}
-.briefing-text{font-size:14px;line-height:1.75;color:var(--ts);}
+.briefing-text{font-size:14px;line-height:1.8;color:var(--ts);}
 .briefing-text strong{color:var(--tx);font-weight:500;}
-.briefing-loading{font-family:var(--fm);font-size:12px;color:var(--tm);display:flex;align-items:center;gap:8px;}
+.b-loading{font-family:var(--fm);font-size:12px;color:var(--tm);display:flex;align-items:center;gap:6px;}
 .b-dot{width:5px;height:5px;border-radius:50%;background:var(--purple);animation:pulse 1.2s ease-in-out infinite;}
 .b-dot:nth-child(2){animation-delay:.2s;}.b-dot:nth-child(3){animation-delay:.4s;}
 
-/* PREDICTED ALERTS */
-.pred-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.75rem;margin-bottom:1.75rem;}
-.pred-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:1rem 1.25rem;border-left:3px solid var(--amber);background:linear-gradient(135deg,rgba(240,165,0,0.06),var(--panel));animation:slideIn .4s ease both;}
-@keyframes slideIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
-.pred-city{font-size:14px;font-weight:600;letter-spacing:-.01em;margin-bottom:3px;}
+.pred-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:.75rem;margin-bottom:1.75rem;}
+.pred-card{background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--amber);border-radius:12px;padding:1rem 1.25rem;background:linear-gradient(135deg,rgba(240,165,0,0.06),var(--panel));animation:fadeUp .4s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.pred-city{font-size:14px;font-weight:600;margin-bottom:3px;}
 .pred-meta{font-family:var(--fm);font-size:12px;color:var(--ts);line-height:1.7;}
 .pred-meta span{color:var(--tx);}
-.pred-when{display:inline-block;margin-top:6px;font-family:var(--fm);font-size:11px;color:var(--amber);background:rgba(240,165,0,0.1);border:1px solid rgba(240,165,0,0.2);border-radius:999px;padding:2px 8px;}
+.pred-when{display:inline-block;margin-top:6px;font-family:var(--fm);font-size:11px;color:var(--amber);background:rgba(240,165,0,0.1);border:1px solid rgba(240,165,0,0.2);border-radius:999px;padding:2px 9px;}
 
-/* CURRENT ALERTS */
 .alerts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:.75rem;margin-bottom:1.75rem;}
-.alert-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:1rem 1.25rem;display:flex;align-items:flex-start;justify-content:space-between;transition:transform .15s;animation:slideIn .4s ease both;}
+.alert-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:1rem 1.25rem;display:flex;align-items:flex-start;justify-content:space-between;transition:transform .15s;animation:fadeUp .4s ease both;}
 .alert-card:hover{transform:translateY(-2px);}
 .alert-card.watch{border-left:3px solid var(--cyan);background:linear-gradient(135deg,var(--cyan-d),var(--panel));}
 .alert-card.warning{border-left:3px solid var(--amber);background:linear-gradient(135deg,var(--amber-d),var(--panel));}
 .alert-card.emergency{border-left:3px solid var(--red);background:linear-gradient(135deg,var(--red-d),var(--panel));}
-.alert-city{font-size:15px;font-weight:600;letter-spacing:-.01em;margin-bottom:4px;}
+.alert-city{font-size:15px;font-weight:600;margin-bottom:4px;}
 .alert-meta{font-family:var(--fm);font-size:12px;color:var(--ts);line-height:1.7;}
 .alert-meta span{color:var(--tx);}
-.tier-badge{font-family:var(--fm);font-size:10px;font-weight:500;padding:3px 9px;border-radius:999px;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;flex-shrink:0;margin-left:8px;margin-top:2px;}
-.badge-normal{background:var(--green-d);color:var(--green);border:1px solid rgba(0,217,139,.2);}
-.badge-watch{background:var(--cyan-d);color:var(--cyan);border:1px solid rgba(0,200,180,.2);}
-.badge-warning{background:var(--amber-d);color:var(--amber);border:1px solid rgba(240,165,0,.2);}
-.badge-emergency{background:var(--red-d);color:var(--red);border:1px solid rgba(240,64,96,.2);}
 .no-alerts{background:var(--panel);border:1px solid rgba(0,217,139,.15);border-radius:12px;padding:1.25rem 2rem;font-family:var(--fm);font-size:13px;color:var(--green);display:flex;align-items:center;gap:10px;margin-bottom:1.75rem;}
 
 .two-col{display:grid;grid-template-columns:1.1fr 0.9fr;gap:1rem;}
-.panel-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
-.panel-header{padding:1rem 1.5rem;border-bottom:1px solid var(--border);}
-table{width:100%;border-collapse:collapse;}
-thead tr{background:var(--panel-alt);}
-thead th{font-family:var(--fm);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--tm);text-align:left;padding:.7rem 1.25rem;}
-tbody tr{border-top:1px solid var(--border);transition:background .15s;}
-tbody tr:hover{background:rgba(255,255,255,.02);}
-tbody td{padding:.8rem 1.25rem;font-family:var(--fm);font-size:13px;color:var(--ts);}
-tbody td:first-child{color:var(--tx);font-weight:400;}
-.sa{color:var(--amber);}.sc{color:var(--green);}
-.chart-wrap{padding:1.25rem 1.5rem;}
 .bar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
 .bar-city{font-family:var(--fm);font-size:11px;color:var(--ts);width:88px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .bar-track{flex:1;height:6px;background:rgba(255,255,255,.05);border-radius:3px;overflow:visible;position:relative;}
@@ -113,18 +55,17 @@ tbody td:first-child{color:var(--tx);font-weight:400;}
 .bar-fill::after{content:'';position:absolute;right:0;top:50%;transform:translateY(-50%);width:8px;height:8px;border-radius:50%;background:inherit;box-shadow:0 0 6px currentColor;}
 .bar-val{font-family:var(--fm);font-size:11px;color:var(--tm);width:34px;text-align:right;flex-shrink:0;}
 
-/* MODAL */
-.modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(6,13,26,0.85);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:1.5rem;opacity:0;pointer-events:none;transition:opacity .25s ease;}
+.modal-overlay{position:fixed;inset:0;z-index:300;background:rgba(6,13,26,0.85);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:1.5rem;opacity:0;pointer-events:none;transition:opacity .25s ease;}
 .modal-overlay.open{opacity:1;pointer-events:all;}
-.modal{background:var(--panel);border:1px solid var(--glow);border-radius:18px;width:100%;max-width:820px;box-shadow:0 0 80px rgba(0,200,180,0.12),0 24px 60px rgba(0,0,0,0.6);transform:translateY(24px) scale(0.97);transition:transform .28s cubic-bezier(.34,1.56,.64,1);overflow:hidden;}
+.modal{background:var(--panel);border:1px solid var(--glow);border-radius:18px;width:100%;max-width:820px;box-shadow:0 0 80px rgba(0,200,180,0.1),0 24px 60px rgba(0,0,0,0.6);transform:translateY(24px) scale(.97);transition:transform .28s cubic-bezier(.34,1.56,.64,1);overflow:hidden;}
 .modal-overlay.open .modal{transform:translateY(0) scale(1);}
-.modal-header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.modal-header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
 .modal-title{font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px;}
 .modal-title svg{width:16px;height:16px;stroke:var(--cyan);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-.modal-close{width:30px;height:30px;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--tm);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;font-size:16px;line-height:1;}
+.modal-close{width:30px;height:30px;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--tm);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;font-size:16px;}
 .modal-close:hover{background:rgba(255,255,255,.1);color:var(--tx);}
-.modal-city-bar{padding:.75rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
-.city-btn{font-family:var(--fm);font-size:11px;padding:4px 10px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--tm);cursor:pointer;transition:all .15s;white-space:nowrap;}
+.modal-city-bar{padding:.75rem 1.5rem;border-bottom:1px solid var(--border);display:flex;gap:6px;flex-wrap:wrap;}
+.city-btn{font-family:var(--fm);font-size:11px;padding:4px 10px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--tm);cursor:pointer;transition:all .15s;}
 .city-btn:hover{border-color:var(--glow);color:var(--ts);}
 .city-btn.active{background:var(--cyan-d);border-color:var(--glow);color:var(--cyan);}
 .modal-body{padding:1.5rem;}
@@ -136,111 +77,64 @@ tbody td:first-child{color:var(--tx);font-weight:400;}
 .trend-area{fill:url(#areaGrad);}
 .threshold-line{stroke:var(--amber);stroke-width:1.5;stroke-dasharray:5 4;}
 .chart-legend{display:flex;align-items:center;gap:16px;margin-top:12px;font-family:var(--fm);font-size:11px;color:var(--tm);flex-wrap:wrap;}
-.legend-item{display:flex;align-items:center;gap:5px;}
-.legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
-.legend-dash{width:16px;border-top:2px dashed var(--amber);}
-#trend-summary{margin-left:auto;color:var(--ts);}
+.leg-item{display:flex;align-items:center;gap:5px;}
+.leg-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.leg-dash{width:16px;border-top:2px dashed var(--amber);}
+#trend-sum{margin-left:auto;color:var(--ts);}
 
-footer{text-align:center;padding:2.5rem 1rem 1.5rem;font-family:var(--fm);font-size:11px;color:var(--tm);letter-spacing:.04em;position:relative;z-index:1;}
-footer span{color:var(--ts);}
-#loading{text-align:center;padding:6rem 2rem;font-family:var(--fm);font-size:13px;color:var(--tm);letter-spacing:.06em;}
-.loading-wave{display:inline-flex;gap:4px;margin-bottom:1rem;}
-.loading-wave span{display:inline-block;width:4px;height:20px;background:var(--cyan-m);border-radius:2px;animation:wave .9s ease-in-out infinite;}
-.loading-wave span:nth-child(2){animation-delay:.15s;}.loading-wave span:nth-child(3){animation-delay:.3s;}.loading-wave span:nth-child(4){animation-delay:.45s;}.loading-wave span:nth-child(5){animation-delay:.6s;}
-@keyframes wave{0%,100%{transform:scaleY(.4);opacity:.4;}50%{transform:scaleY(1);opacity:1;}}
-#error-msg{display:none;text-align:center;padding:4rem 2rem;font-family:var(--fm);font-size:13px;color:var(--red);}
-#dashboard{display:none;}
 @media(max-width:900px){.metrics{grid-template-columns:repeat(2,1fr);}.two-col{grid-template-columns:1fr;}}
-@media(max-width:600px){main{padding:1rem 1rem 3rem;}header{padding:0 1rem;}.metrics{grid-template-columns:repeat(2,1fr);gap:.6rem;}.metric-value{font-size:24px;}.hdr-r{gap:6px;}#last-updated{display:none;}}
+@media(max-width:600px){.metrics{grid-template-columns:repeat(2,1fr);gap:.6rem;}.metric-value{font-size:24px;}}
 </style>
 </head>
 <body>
-<header>
-  <div class="brand">
-    <div class="brand-icon">
-      <svg viewBox="0 0 24 24"><path d="M2 12s4-8 10-8 10 8 10 8-4 8-10 8S2 12 2 12z"/><circle cx="12" cy="12" r="3"/><path d="M3 16c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/></svg>
-    </div>
-    <div>
-      <div class="brand-name">OceanGuard</div>
-      <div class="brand-sub">India Coastal Monitor · v2</div>
-    </div>
-  </div>
-  <div class="hdr-r">
-    <span id="last-updated">Connecting...</span>
-    <button class="icon-btn" onclick="openModal()">
-      <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-      7-Day Trend
-    </button>
-    <div class="live-pill"><div class="live-dot"></div>LIVE</div>
-  </div>
-</header>
-
-<main>
-  <div id="loading">
-    <div class="loading-wave"><span></span><span></span><span></span><span></span><span></span></div>
+<script src="nav.js"></script>
+<main class="og-main">
+  <div id="og-loading">
+    <div class="og-wave"><span></span><span></span><span></span><span></span><span></span></div>
     <div>Fetching coastal data...</div>
   </div>
-  <div id="error-msg">⚠ Could not load data.<br>Please ensure your Google Sheet is publicly shared.</div>
-  <div id="dashboard">
+  <div id="og-dashboard" style="display:none">
     <div class="metrics" id="metrics-row"></div>
-
-    <!-- AI INTELLIGENCE BRIEFING -->
-    <div class="sec">AI intelligence briefing</div>
-    <div class="briefing-card" id="briefing-card">
+    <div class="og-sec">AI intelligence briefing</div>
+    <div class="briefing-card">
       <div class="briefing-header">
         <div class="briefing-title">
-          <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 8v4l2 2"/><path d="M18 2v4h4"/></svg>
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l2 2"/></svg>
           Coastal Intelligence Report
         </div>
         <span class="briefing-time" id="briefing-time">—</span>
       </div>
-      <div id="briefing-content" class="briefing-loading">
+      <div id="briefing-content" class="b-loading">
         <div class="b-dot"></div><div class="b-dot"></div><div class="b-dot"></div>
-        <span style="margin-left:4px;">Loading briefing from database...</span>
+        <span style="margin-left:4px">Loading briefing...</span>
       </div>
     </div>
-
-    <!-- PREDICTED ALERTS -->
-    <div class="sec" id="pred-section-title">Predicted alerts — next 24 hours</div>
-    <div id="pred-container" style="margin-bottom:1.75rem;">
-      <div class="no-alerts" style="border-color:rgba(240,165,0,.15);color:var(--amber);">
-        <span>⏳</span> Scanning forecast data...
-      </div>
+    <div class="og-sec">Predicted alerts — next 24 hours</div>
+    <div id="pred-container" style="margin-bottom:1.75rem">
+      <div class="no-alerts" style="border-color:rgba(240,165,0,.15);color:var(--amber)"><span>⏳</span>Scanning forecast...</div>
     </div>
-
-    <!-- CURRENT ALERTS -->
-    <div class="sec">Current alerts</div>
+    <div class="og-sec">Current alerts</div>
     <div id="alerts-container"></div>
-
     <div class="two-col">
-      <div class="panel-card">
-        <div class="panel-header"><div class="sec" style="margin-bottom:0;">City status</div></div>
-        <table>
+      <div class="og-card">
+        <div class="og-card-header"><div class="og-sec" style="margin-bottom:0">City status</div></div>
+        <table class="og-table">
           <thead><tr><th>City</th><th>Wind</th><th>Temp</th><th>Rain</th><th>Risk</th><th>Status</th></tr></thead>
           <tbody id="city-table"></tbody>
         </table>
       </div>
-      <div class="panel-card">
-        <div class="panel-header"><div class="sec" style="margin-bottom:0;">Wind speed comparison</div></div>
-        <div class="chart-wrap" id="bar-chart"></div>
+      <div class="og-card">
+        <div class="og-card-header"><div class="og-sec" style="margin-bottom:0">Wind speed comparison</div></div>
+        <div style="padding:1.25rem 1.5rem" id="bar-chart"></div>
       </div>
     </div>
   </div>
 </main>
 
-<footer>
-  Data · <span>Open-Meteo</span> &nbsp;|&nbsp; Pipeline · <span>n8n</span> &nbsp;|&nbsp; AI · <span>Claude</span> &nbsp;|&nbsp; Built by <span>OceanGuard</span><br><br>
-  Refreshes every 60 seconds · Monitoring India's 7,500 km coastline
-</footer>
-
-<!-- TREND MODAL -->
-<div class="modal-overlay" id="modal-overlay" onclick="handleOverlayClick(event)">
-  <div class="modal" id="modal">
+<div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
     <div class="modal-header">
-      <div class="modal-title">
-        <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-        7-Day Wind Trend
-      </div>
+      <div class="modal-title"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>7-Day Wind Trend</div>
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
     <div class="modal-city-bar" id="city-selector"></div>
@@ -250,7 +144,7 @@ footer span{color:var(--ts);}
           <defs>
             <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stop-color="#00c8b4" stop-opacity="0.25"/>
-              <stop offset="100%" stop-color="#00c8b4" stop-opacity="0.00"/>
+              <stop offset="100%" stop-color="#00c8b4" stop-opacity="0"/>
             </linearGradient>
           </defs>
           <g id="grid-lines"></g><g id="y-labels"></g><g id="x-labels"></g>
@@ -261,202 +155,165 @@ footer span{color:var(--ts);}
         </svg>
       </div>
       <div class="chart-legend">
-        <div class="legend-item"><div class="legend-dot" style="background:var(--cyan)"></div><span>Wind speed (km/h)</span></div>
-        <div class="legend-item"><div class="legend-dash"></div><span>Alert threshold</span></div>
-        <span id="trend-summary"></span>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--cyan)"></div><span>Wind (km/h)</span></div>
+        <div class="leg-item"><div class="leg-dash"></div><span>Threshold</span></div>
+        <span id="trend-sum"></span>
       </div>
     </div>
   </div>
 </div>
 
+<footer class="og-footer">
+  Data · <span>Open-Meteo</span> &nbsp;|&nbsp; Pipeline · <span>n8n</span> &nbsp;|&nbsp; AI · <span>Groq / Llama 3</span> &nbsp;|&nbsp; Built by <span>OceanGuard</span><br>
+  Refreshes every 60 seconds · Monitoring India's 7,500 km coastline
+  <div class="og-footer-links">
+    <a href="analytics.html">Analytics</a>
+    <a href="alerts.html">Alert History</a>
+    <a href="about.html">About</a>
+    <a href="https://github.com/tupegaurav/oceanguard" target="_blank">GitHub</a>
+  </div>
+</footer>
+
 <script>
-const SHEET_ID  = "1LHddh6bg9M0hskAypVRr_iF5h4SLzM1yw1vuFetn51s";
-const API_URL   = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Sheet1`;
-const BRIEF_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Briefings`;
-const TIER      = {NORMAL:0,WATCH:1,WARNING:2,EMERGENCY:3};
-const BAR_COLOR = {NORMAL:"#00d98b",WATCH:"#00c8b4",WARNING:"#f0a500",EMERGENCY:"#f04060"};
-const CITY_DATA = [
-  {city:"Mumbai",           lat:19.0760,lon:72.8777,threshold:14},
-  {city:"Goa",              lat:15.4909,lon:73.8278,threshold:13},
-  {city:"Mangalore",        lat:12.9141,lon:74.8560,threshold:13},
-  {city:"Kochi",            lat:9.9312, lon:76.2673,threshold:12},
+const SHEET="1LHddh6bg9M0hskAypVRr_iF5h4SLzM1yw1vuFetn51s";
+const URL=`https://docs.google.com/spreadsheets/d/${SHEET}/gviz/tq?tqx=out:json&sheet=Sheet1`;
+const BURL=`https://docs.google.com/spreadsheets/d/${SHEET}/gviz/tq?tqx=out:json&sheet=Briefings`;
+const TIER={NORMAL:0,WATCH:1,WARNING:2,EMERGENCY:3};
+const BAR={NORMAL:"#00d98b",WATCH:"#00c8b4",WARNING:"#f0a500",EMERGENCY:"#f04060"};
+const CITIES=[
+  {city:"Mumbai",lat:19.076,lon:72.8777,threshold:14},
+  {city:"Goa",lat:15.4909,lon:73.8278,threshold:13},
+  {city:"Mangalore",lat:12.9141,lon:74.856,threshold:13},
+  {city:"Kochi",lat:9.9312,lon:76.2673,threshold:12},
   {city:"Thiruvananthapuram",lat:8.5241,lon:76.9366,threshold:11},
-  {city:"Pondicherry",      lat:11.9416,lon:79.8083,threshold:12},
-  {city:"Chennai",          lat:13.0827,lon:80.2707,threshold:12},
-  {city:"Visakhapatnam",    lat:17.6868,lon:83.2185,threshold:13},
-  {city:"Kolkata",          lat:22.5726,lon:88.3639,threshold:12}
+  {city:"Pondicherry",lat:11.9416,lon:79.8083,threshold:12},
+  {city:"Chennai",lat:13.0827,lon:80.2707,threshold:12},
+  {city:"Visakhapatnam",lat:17.6868,lon:83.2185,threshold:13},
+  {city:"Kolkata",lat:22.5726,lon:88.3639,threshold:12}
 ];
-const THRESHOLDS = Object.fromEntries(CITY_DATA.map(c=>[c.city,c.threshold]));
-
-function isValidCity(n){
-  if(!n||typeof n!=="string") return false;
-  if(/^\d{4}-\d{2}-\d{2}/.test(n)) return false;
-  if(n.length>30||n.length<2) return false;
-  return true;
-}
-function badgeHTML(r){
-  const c={NORMAL:"badge-normal",WATCH:"badge-watch",WARNING:"badge-warning",EMERGENCY:"badge-emergency"};
-  return `<span class="tier-badge ${c[r]||"badge-normal"}">${r}</span>`;
-}
-
-/* ── MODAL ── */
-function openModal(){document.getElementById("modal-overlay").classList.add("open");document.body.style.overflow="hidden";if(selectedCity)renderTrend(selectedCity);}
+const TH=Object.fromEntries(CITIES.map(c=>[c.city,c.threshold]));
+function isCity(n){return n&&typeof n==="string"&&!/^\d{4}-\d{2}-\d{2}/.test(n)&&n.length>=2&&n.length<=30;}
+function badge(r){const c={NORMAL:"badge-normal",WATCH:"badge-watch",WARNING:"badge-warning",EMERGENCY:"badge-emergency"};return `<span class="tier-badge ${c[r]||'badge-normal'}">${r}</span>`;}
+function openModal(){document.getElementById("modal-overlay").classList.add("open");document.body.style.overflow="hidden";if(sel)renderTrend(sel);}
 function closeModal(){document.getElementById("modal-overlay").classList.remove("open");document.body.style.overflow="";}
-function handleOverlayClick(e){if(e.target===document.getElementById("modal-overlay"))closeModal();}
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal();});
 
-/* ── TREND CHART ── */
-let allHistory={},selectedCity=null;
+let hist={},sel=null;
 function renderTrend(city){
-  const data=allHistory[city];if(!data||!data.length)return;
-  selectedCity=city;
-  const threshold=THRESHOLDS[city]||12;
+  const d=hist[city];if(!d||!d.length)return;
+  sel=city;const th=TH[city]||12;
   document.querySelectorAll(".city-btn").forEach(b=>b.classList.toggle("active",b.dataset.city===city));
   const W=760,H=220,pL=36,pR=18,pT=14,pB=26,cW=W-pL-pR,cH=H-pT-pB;
-  const winds=data.map(d=>d.avgWind);
-  const maxW=Math.max(...winds,threshold*1.4);
-  const xPos=i=>pL+(i/Math.max(data.length-1,1))*cW;
-  const yPos=v=>pT+cH-(v/maxW)*cH;
+  const ws=d.map(x=>x.w),mx=Math.max(...ws,th*1.4);
+  const xp=i=>pL+(i/Math.max(d.length-1,1))*cW;
+  const yp=v=>pT+cH-(v/mx)*cH;
   let gH="",yH="";
-  [0,.25,.5,.75,1].forEach(f=>{const v=maxW*f,y=yPos(v);gH+=`<line class="grid-line" x1="${pL}" x2="${W-pR}" y1="${y}" y2="${y}"/>`;yH+=`<text class="axis-label" x="${pL-5}" y="${y+3}" text-anchor="end">${v.toFixed(0)}</text>`;});
+  [0,.25,.5,.75,1].forEach(f=>{const v=mx*f,y=yp(v);gH+=`<line class="grid-line" x1="${pL}" x2="${W-pR}" y1="${y}" y2="${y}"/>`;yH+=`<text class="axis-label" x="${pL-5}" y="${y+3}" text-anchor="end">${v.toFixed(0)}</text>`;});
   document.getElementById("grid-lines").innerHTML=gH;document.getElementById("y-labels").innerHTML=yH;
-  let xH="";data.forEach((d,i)=>{const lbl=new Date(d.date+"T00:00:00").toLocaleDateString("en-IN",{day:"numeric",month:"short"});xH+=`<text class="axis-label" x="${xPos(i).toFixed(1)}" y="${H-4}" text-anchor="middle">${lbl}</text>`;});
+  let xH="";d.forEach((x,i)=>{const l=new Date(x.date+"T00:00:00").toLocaleDateString("en-IN",{day:"numeric",month:"short"});xH+=`<text class="axis-label" x="${xp(i).toFixed(1)}" y="${H-4}" text-anchor="middle">${l}</text>`;});
   document.getElementById("x-labels").innerHTML=xH;
-  const pts=data.map((d,i)=>`${xPos(i).toFixed(1)},${yPos(d.avgWind).toFixed(1)}`);
+  const pts=d.map((x,i)=>`${xp(i).toFixed(1)},${yp(x.w).toFixed(1)}`);
   document.getElementById("line-path").setAttribute("d","M"+pts.join("L"));
-  document.getElementById("area-path").setAttribute("d",`M${pL},${pT+cH} L${pts.join("L")} L${xPos(data.length-1)},${pT+cH} Z`);
-  document.getElementById("data-points").innerHTML=data.map((d,i)=>{const col=d.avgWind>=threshold?"#f0a500":"#00c8b4";const glow=d.avgWind>=threshold?"rgba(240,165,0,0.25)":"rgba(0,200,180,0.25)";return `<circle cx="${xPos(i).toFixed(1)}" cy="${yPos(d.avgWind).toFixed(1)}" r="8" fill="${glow}"/><circle cx="${xPos(i).toFixed(1)}" cy="${yPos(d.avgWind).toFixed(1)}" r="4" fill="${col}"/>`;}).join("");
-  const ty=yPos(threshold);const tl=document.getElementById("threshold-line");
+  document.getElementById("area-path").setAttribute("d",`M${pL},${pT+cH} L${pts.join("L")} L${xp(d.length-1)},${pT+cH} Z`);
+  document.getElementById("data-points").innerHTML=d.map((x,i)=>{const c=x.w>=th?"#f0a500":"#00c8b4";const g=x.w>=th?"rgba(240,165,0,0.25)":"rgba(0,200,180,0.25)";return `<circle cx="${xp(i).toFixed(1)}" cy="${yp(x.w).toFixed(1)}" r="8" fill="${g}"/><circle cx="${xp(i).toFixed(1)}" cy="${yp(x.w).toFixed(1)}" r="4" fill="${c}"/>`;}).join("");
+  const ty=yp(th);const tl=document.getElementById("threshold-line");
   tl.setAttribute("x1",pL);tl.setAttribute("x2",W-pR);tl.setAttribute("y1",ty);tl.setAttribute("y2",ty);
-  const avg=winds.reduce((a,b)=>a+b,0)/winds.length;
-  const trend=winds.length>1?(winds[winds.length-1]>winds[0]?"↑ Rising":"↓ Easing"):"—";
-  const alertDays=data.filter(d=>d.avgWind>=threshold).length;
-  document.getElementById("trend-summary").textContent=`Avg ${avg.toFixed(1)} km/h · ${trend} · ${alertDays} alert day${alertDays!==1?"s":""}`;
+  const avg=ws.reduce((a,b)=>a+b,0)/ws.length;
+  const tr=ws.length>1?(ws[ws.length-1]>ws[0]?"↑ Rising":"↓ Easing"):"—";
+  const ad=d.filter(x=>x.w>=th).length;
+  document.getElementById("trend-sum").textContent=`Avg ${avg.toFixed(1)} km/h · ${tr} · ${ad} alert day${ad!==1?"s":""}`;
 }
 
-/* ── PREDICTIVE ALERTS ── */
 async function loadPredictions(){
   try{
-    const now=new Date();
-    const in24h=new Date(now.getTime()+24*60*60*1000);
-    const results=await Promise.all(CITY_DATA.map(async city=>{
+    const now=new Date(),in24=new Date(now.getTime()+86400000);
+    const res=await Promise.all(CITIES.map(async c=>{
       try{
-        const url=`https://api.open-meteo.com/v1/forecast?latitude=${city.lat}&longitude=${city.lon}&hourly=wind_speed_10m&forecast_days=2&timezone=Asia%2FKolkata`;
-        const res=await fetch(url);const data=await res.json();
-        const times=data.hourly.time;const winds=data.hourly.wind_speed_10m;
-        let firstCrossing=null;
-        for(let i=0;i<times.length;i++){
-          const t=new Date(times[i]);
-          if(t>now&&t<=in24h&&winds[i]>=city.threshold){
-            firstCrossing={time:t,wind:winds[i],hoursFrom:Math.round((t-now)/3600000)};
-            break;
-          }
+        const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${c.lat}&longitude=${c.lon}&hourly=wind_speed_10m&forecast_days=2&timezone=Asia%2FKolkata`);
+        const d=await r.json();
+        let fc=null;
+        for(let i=0;i<d.hourly.time.length;i++){
+          const t=new Date(d.hourly.time[i]);
+          if(t>now&&t<=in24&&d.hourly.wind_speed_10m[i]>=c.threshold){fc={t,w:d.hourly.wind_speed_10m[i],h:Math.round((t-now)/3600000)};break;}
         }
-        return{...city,firstCrossing};
-      }catch{return{...city,firstCrossing:null};}
+        return{...c,fc};
+      }catch{return{...c,fc:null};}
     }));
-    const predicted=results.filter(r=>r.firstCrossing).sort((a,b)=>a.firstCrossing.hoursFrom-b.firstCrossing.hoursFrom);
-    const container=document.getElementById("pred-container");
-    if(!predicted.length){
-      container.innerHTML=`<div class="no-alerts" style="border-color:rgba(0,217,139,.15);">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-        No threshold crossings predicted in the next 24 hours
-      </div>`;
-    }else{
-      container.innerHTML=`<div class="pred-grid">${predicted.map((r,i)=>{
-        const fc=r.firstCrossing;
-        const when=fc.hoursFrom===0?"Within the hour":`In ~${fc.hoursFrom} hour${fc.hoursFrom!==1?"s":""}`;
-        const timeStr=fc.time.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit",hour12:true});
-        return `<div class="pred-card" style="animation-delay:${i*80}ms">
-          <div class="pred-city">${r.city}</div>
-          <div class="pred-meta">Forecast wind <span>${fc.wind.toFixed(1)} km/h</span> · Threshold <span>${r.threshold} km/h</span></div>
-          <div class="pred-when">⚡ ${when} · ~${timeStr}</div>
-        </div>`;
-      }).join("")}</div>`;
-    }
-  }catch(e){
-    document.getElementById("pred-container").innerHTML=`<div class="no-alerts" style="border-color:rgba(255,255,255,.05);color:var(--tm);">Forecast data unavailable</div>`;
-  }
+    const pred=res.filter(r=>r.fc).sort((a,b)=>a.fc.h-b.fc.h);
+    const el=document.getElementById("pred-container");
+    if(!pred.length){el.innerHTML=`<div class="no-alerts"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>No threshold crossings predicted in next 24 hours</div>`;return;}
+    el.innerHTML=`<div class="pred-grid">${pred.map((r,i)=>{
+      const when=r.fc.h===0?"Within the hour":`In ~${r.fc.h}h`;
+      const ts=r.fc.t.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit",hour12:true});
+      return `<div class="pred-card" style="animation-delay:${i*60}ms"><div class="pred-city">${r.city}</div><div class="pred-meta">Forecast <span>${r.fc.w.toFixed(1)} km/h</span> · Threshold <span>${r.threshold} km/h</span></div><div class="pred-when">⚡ ${when} · ${ts}</div></div>`;
+    }).join("")}</div>`;
+  }catch{document.getElementById("pred-container").innerHTML=`<div class="no-alerts" style="color:var(--tm)">Forecast data unavailable</div>`;}
 }
 
-/* ── AI BRIEFING from Briefings sheet ── */
 async function loadBriefing(){
   try{
-    const res=await fetch(BRIEF_URL);
-    const text=await res.text();
-    const json=JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*?)\);/)[1]);
-    const rows=json.table.rows;
-    if(!rows||!rows.length)throw new Error("no rows");
+    const r=await fetch(BURL);const t=await r.text();
+    const j=JSON.parse(t.match(/google\.visualization\.Query\.setResponse\(([\s\S]*?)\);/)[1]);
+    const rows=j.table.rows;if(!rows||!rows.length)throw 0;
     const last=rows[rows.length-1].c;
-    const briefingText=last[1]?.v||"";
-    const briefingTime=last[0]?.v||"";
-    if(!briefingText)throw new Error("empty");
-    const timeStr=briefingTime?new Date(briefingTime).toLocaleString("en-IN",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):"—";
-    document.getElementById("briefing-time").textContent=timeStr;
-    document.getElementById("briefing-content").className="briefing-text";
-    document.getElementById("briefing-content").innerHTML=briefingText.replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>").replace(/\n/g,"<br>");
+    const txt=last[1]?.v||"";const ts=last[0]?.v||"";
+    if(!txt)throw 0;
+    const tsStr=ts?new Date(ts).toLocaleString("en-IN",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):"—";
+    document.getElementById("briefing-time").textContent=tsStr;
+    const el=document.getElementById("briefing-content");
+    el.className="briefing-text";
+    el.innerHTML=txt.replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>").replace(/\n/g,"<br>");
   }catch{
-    document.getElementById("briefing-content").className="briefing-text";
-    document.getElementById("briefing-content").innerHTML=`<span style="color:var(--tm)">AI briefing not yet configured. Follow the n8n setup guide to enable daily intelligence reports.</span>`;
+    const el=document.getElementById("briefing-content");
+    el.className="briefing-text";
+    el.innerHTML=`<span style="color:var(--tm)">AI briefing will appear here after the next n8n briefing run.</span>`;
   }
 }
 
-/* ── MAIN DATA ── */
 async function loadData(){
   try{
-    const res=await fetch(API_URL);const text=await res.text();
-    const json=JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*?)\);/)[1]);
-    const rows=json.table.rows;
-    const cityMap={};const histMap={};
-    const cutoff=new Date();cutoff.setDate(cutoff.getDate()-7);
+    const r=await fetch(URL);const t=await r.text();
+    const j=JSON.parse(t.match(/google\.visualization\.Query\.setResponse\(([\s\S]*?)\);/)[1]);
+    const rows=j.table.rows;
+    const cm={};const hm={};
+    const cut=new Date();cut.setDate(cut.getDate()-7);
     rows.forEach(row=>{
       const c=row.c;if(!c||!c[1]?.v)return;
-      const city=String(c[1].v).trim();if(!isValidCity(city))return;
+      const city=String(c[1].v).trim();if(!isCity(city))return;
       const wind=parseFloat(c[2]?.v)||0,temp=parseFloat(c[3]?.v)||0,rain=parseFloat(c[4]?.v)||0;
       const risk=(c[5]?.v||"NORMAL").toUpperCase(),ts=c[7]?.v||"";
-      cityMap[city]={city,wind,temp,rain,risk,ts};
-      if(ts){const d=new Date(ts);if(d>=cutoff){const ds=ts.slice(0,10);if(!histMap[city])histMap[city]={};if(!histMap[city][ds])histMap[city][ds]=[];histMap[city][ds].push(wind);}}
+      cm[city]={city,wind,temp,rain,risk,ts};
+      if(ts){const d=new Date(ts);if(d>=cut){const ds=ts.slice(0,10);if(!hm[city])hm[city]={};if(!hm[city][ds])hm[city][ds]=[];hm[city][ds].push(wind);}}
     });
-    allHistory={};
-    Object.keys(histMap).forEach(city=>{allHistory[city]=Object.keys(histMap[city]).sort().map(date=>({date,avgWind:histMap[city][date].reduce((a,b)=>a+b,0)/histMap[city][date].length}));});
-    const cities=Object.values(cityMap);
+    hist={};
+    Object.keys(hm).forEach(city=>{hist[city]=Object.keys(hm[city]).sort().map(date=>({date,w:hm[city][date].reduce((a,b)=>a+b,0)/hm[city][date].length}));});
+    const cities=Object.values(cm);
     const alerts=cities.filter(c=>c.risk!=="NORMAL").sort((a,b)=>TIER[b.risk]-TIER[a.risk]||b.wind-a.wind);
     const sorted=[...cities].sort((a,b)=>b.wind-a.wind);
-    const maxWind=Math.max(...cities.map(c=>c.wind),1);
-    const highestRisk=alerts.length?alerts[0].risk:"NORMAL";
-    const latest=cities.map(c=>c.ts).filter(Boolean).sort().reverse()[0]||"";
-    const timeStr=latest?new Date(latest).toLocaleString("en-IN",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):"recently";
-    const riskCls={NORMAL:"green",WATCH:"amber",WARNING:"amber",EMERGENCY:"red"};
+    const mw=Math.max(...cities.map(c=>c.wind),1);
+    const hr=alerts.length?alerts[0].risk:"NORMAL";
+    const lat=cities.map(c=>c.ts).filter(Boolean).sort().reverse()[0]||"";
+    const ts=lat?new Date(lat).toLocaleString("en-IN",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):"recently";
+    const rc={NORMAL:"green",WATCH:"amber",WARNING:"amber",EMERGENCY:"red"};
     document.getElementById("metrics-row").innerHTML=[
-      {label:"Cities monitored",value:cities.length,cls:"cyan"},
-      {label:"Active alerts",value:alerts.length,cls:alerts.length?"amber":"green"},
-      {label:"Highest risk",value:highestRisk,cls:riskCls[highestRisk]},
-      {label:"All-clear cities",value:cities.length-alerts.length,cls:"green"}
-    ].map(m=>`<div class="metric"><div class="metric-label">${m.label}</div><div class="metric-value ${m.cls}">${m.value}</div><div class="metric-sub">of 9 total</div></div>`).join("");
-    const alertsEl=document.getElementById("alerts-container");
-    if(!alerts.length){alertsEl.innerHTML=`<div class="no-alerts"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>All 9 coastal cities currently clear</div>`;}
-    else{alertsEl.innerHTML=`<div class="alerts-grid">${alerts.map((a,i)=>{const cls={WATCH:"watch",WARNING:"warning",EMERGENCY:"emergency"}[a.risk]||"watch";return `<div class="alert-card ${cls}" style="animation-delay:${i*60}ms"><div><div class="alert-city">${a.city}</div><div class="alert-meta">Wind <span>${a.wind.toFixed(1)} km/h</span> · Temp <span>${a.temp.toFixed(1)}°C</span><br>Rain <span>${a.rain} mm</span></div></div>${badgeHTML(a.risk)}</div>`;}).join("")}</div>`;}
-    const trendCities=sorted.map(c=>c.city).filter(c=>allHistory[c]&&allHistory[c].length);
-    document.getElementById("city-selector").innerHTML=trendCities.map(city=>`<button class="city-btn" data-city="${city}" onclick="renderTrend('${city}')">${city}</button>`).join("");
-    if(!selectedCity||!allHistory[selectedCity])selectedCity=trendCities[0];
-    document.getElementById("city-table").innerHTML=sorted.map(c=>`<tr><td>${c.city}</td><td>${c.wind.toFixed(1)}</td><td>${c.temp.toFixed(1)}°</td><td>${c.rain}</td><td>${badgeHTML(c.risk)}</td><td class="${c.risk==="NORMAL"?"sc":"sa"}">${c.risk==="NORMAL"?"Clear":"Alert"}</td></tr>`).join("");
-    document.getElementById("bar-chart").innerHTML=sorted.map(c=>{const pct=Math.round((c.wind/maxWind)*100);const col=BAR_COLOR[c.risk]||BAR_COLOR.NORMAL;const name=c.city.length>11?c.city.slice(0,10)+"…":c.city;return `<div class="bar-row"><span class="bar-city">${name}</span><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${col};color:${col};"></div></div><span class="bar-val">${c.wind.toFixed(1)}</span></div>`;}).join("");
-    document.getElementById("last-updated").textContent=`Updated ${timeStr}`;
-    document.getElementById("loading").style.display="none";
-    document.getElementById("error-msg").style.display="none";
-    document.getElementById("dashboard").style.display="block";
-  }catch(err){
-    console.error(err);
-    document.getElementById("loading").style.display="none";
-    document.getElementById("error-msg").style.display="block";
-  }
+      {l:"Cities monitored",v:cities.length,c:"cyan"},{l:"Active alerts",v:alerts.length,c:alerts.length?"amber":"green"},
+      {l:"Highest risk",v:hr,c:rc[hr]},{l:"All-clear cities",v:cities.length-alerts.length,c:"green"}
+    ].map(m=>`<div class="metric"><div class="metric-label">${m.l}</div><div class="metric-value ${m.c}">${m.v}</div><div class="metric-sub">of 9 total</div></div>`).join("");
+    const ae=document.getElementById("alerts-container");
+    if(!alerts.length){ae.innerHTML=`<div class="no-alerts"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>All 9 cities clear</div>`;}
+    else{ae.innerHTML=`<div class="alerts-grid">${alerts.map((a,i)=>{const cl={WATCH:"watch",WARNING:"warning",EMERGENCY:"emergency"}[a.risk]||"watch";return `<div class="alert-card ${cl}" style="animation-delay:${i*60}ms"><div><div class="alert-city">${a.city}</div><div class="alert-meta">Wind <span>${a.wind.toFixed(1)} km/h</span> · Temp <span>${a.temp.toFixed(1)}°C</span><br>Rain <span>${a.rain} mm</span></div></div>${badge(a.risk)}</div>`;}).join("")}</div>`;}
+    const tc=sorted.map(c=>c.city).filter(c=>hist[c]&&hist[c].length);
+    document.getElementById("city-selector").innerHTML=tc.map(city=>`<button class="city-btn" data-city="${city}" onclick="renderTrend('${city}')">${city}</button>`).join("");
+    if(!sel||!hist[sel])sel=tc[0];
+    document.getElementById("city-table").innerHTML=sorted.map(c=>`<tr><td>${c.city}</td><td>${c.wind.toFixed(1)}</td><td>${c.temp.toFixed(1)}°</td><td>${c.rain}</td><td>${badge(c.risk)}</td><td class="${c.risk==="NORMAL"?"sc":"sa"}">${c.risk==="NORMAL"?"Clear":"Alert"}</td></tr>`).join("");
+    document.getElementById("bar-chart").innerHTML=sorted.map(c=>{const pct=Math.round((c.wind/mw)*100);const col=BAR[c.risk]||BAR.NORMAL;const nm=c.city.length>11?c.city.slice(0,10)+"…":c.city;return `<div class="bar-row"><span class="bar-city">${nm}</span><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${col};color:${col}"></div></div><span class="bar-val">${c.wind.toFixed(1)}</span></div>`;}).join("");
+    const ots=document.getElementById("og-timestamp");if(ots)ots.textContent=`Updated ${ts}`;
+    document.getElementById("og-loading").style.display="none";
+    document.getElementById("og-dashboard").style.display="block";
+  }catch(e){console.error(e);document.getElementById("og-loading").innerHTML=`<p style="color:var(--red)">Could not load data. Ensure Google Sheet is publicly shared.</p>`;}
 }
-
-loadData();
-loadPredictions();
-loadBriefing();
-setInterval(loadData,60000);
-setInterval(loadPredictions,300000);
+loadData();loadPredictions();loadBriefing();
+setInterval(loadData,60000);setInterval(loadPredictions,300000);
 </script>
 </body>
 </html>
