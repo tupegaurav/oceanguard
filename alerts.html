@@ -1,1 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>OceanGuard — Alert History</title>
+<link rel="stylesheet" href="style.css"/>
+<style>
+.filter-bar{display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1.5rem;align-items:center;}
+.filter-group{display:flex;gap:4px;}
+.fbtn{font-family:var(--fm);font-size:11px;padding:5px 12px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--tm);cursor:pointer;transition:all .15s;white-space:nowrap;}
+.fbtn:hover{border-color:var(--glow);color:var(--ts);}
+.fbtn.active{border-color:var(--glow);color:var(--cyan);background:var(--cyan-d);}
+.fbtn.amber.active{border-color:rgba(240,165,0,.3);color:var(--amber);background:var(--amber-d);}
+.fbtn.red.active{border-color:rgba(240,64,96,.3);color:var(--red);background:var(--red-d);}
+.filter-sep{width:1px;height:24px;background:var(--border);margin:0 4px;align-self:center;}
+.alert-count{font-family:var(--fm);font-size:11px;color:var(--tm);margin-left:auto;}
 
+.timeline{display:flex;flex-direction:column;gap:.6rem;margin-bottom:1.75rem;}
+.al-row{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:1rem 1.25rem;display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:1rem;transition:border-color .15s;animation:fadeUp .3s ease both;}
+.al-row:hover{border-color:rgba(255,255,255,.12);}
+@keyframes fadeUp{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+.al-row.watch{border-left:3px solid var(--cyan);}
+.al-row.warning{border-left:3px solid var(--amber);}
+.al-row.emergency{border-left:3px solid var(--red);}
+.al-time{font-family:var(--fm);font-size:11px;color:var(--tm);white-space:nowrap;}
+.al-city{font-size:14px;font-weight:600;}
+.al-meta{font-family:var(--fm);font-size:12px;color:var(--ts);margin-top:2px;}
+.al-wind{font-family:var(--fm);font-size:13px;color:var(--ts);text-align:right;white-space:nowrap;}
+
+.no-results{text-align:center;padding:4rem 2rem;font-family:var(--fm);font-size:13px;color:var(--tm);}
+
+@media(max-width:600px){.al-row{grid-template-columns:1fr auto;}.al-time{display:none;}.al-wind{display:none;}}
+</style>
+</head>
+<body>
+<script src="nav.js"></script>
+<main class="og-main">
+  <div id="og-loading">
+    <div class="og-wave"><span></span><span></span><span></span><span></span><span></span></div>
+    <div>Loading alert history...</div>
+  </div>
+  <div id="og-content" style="display:none">
+    <div class="og-page-header">
+      <div class="og-page-title">Alert History</div>
+      <div class="og-page-sub">Complete record of all threshold crossings</div>
+    </div>
+
+    <div class="og-metrics" id="stat-row"></div>
+
+    <div class="og-sec">Filter alerts</div>
+    <div class="filter-bar">
+      <div class="filter-group" id="tier-filters">
+        <button class="fbtn active" data-tier="ALL" onclick="setTier('ALL')">All tiers</button>
+        <button class="fbtn" data-tier="WATCH" onclick="setTier('WATCH')">Watch</button>
+        <button class="fbtn amber" data-tier="WARNING" onclick="setTier('WARNING')">Warning</button>
+        <button class="fbtn red" data-tier="EMERGENCY" onclick="setTier('EMERGENCY')">Emergency</button>
+      </div>
+      <div class="filter-sep"></div>
+      <div class="filter-group" id="city-filters"></div>
+      <span class="alert-count" id="alert-count">— alerts</span>
+    </div>
+
+    <div class="timeline" id="timeline"></div>
+  </div>
+</main>
+
+<footer class="og-footer">
+  Data · <span>Open-Meteo</span> &nbsp;|&nbsp; Pipeline · <span>n8n</span> &nbsp;|&nbsp; Built by <span>OceanGuard</span>
+  <div class="og-footer-links">
+    <a href="index.html">Dashboard</a>
+    <a href="analytics.html">Analytics</a>
+    <a href="about.html">About</a>
+  </div>
+</footer>
+
+<script>
+const SHEET="1LHddh6bg9M0hskAypVRr_iF5h4SLzM1yw1vuFetn51s";
+const URL=`https://docs.google.com/spreadsheets/d/${SHEET}/gviz/tq?tqx=out:json&sheet=Sheet1`;
+function isCity(n){return n&&typeof n==="string"&&!/^\d{4}-\d{2}-\d{2}/.test(n)&&n.length>=2&&n.length<=30;}
+function badge(r){const c={NORMAL:"badge-normal",WATCH:"badge-watch",WARNING:"badge-warning",EMERGENCY:"badge-emergency"};return `<span class="tier-badge ${c[r]||'badge-normal'}">${r}</span>`;}
+
+let allAlerts=[],selTier="ALL",selCity="ALL";
+
+function setTier(t){
+  selTier=t;
+  document.querySelectorAll("[data-tier]").forEach(b=>b.classList.toggle("active",b.dataset.tier===t));
+  render();
+}
+function setCity(c){
+  selCity=c;
+  document.querySelectorAll("[data-citf]").forEach(b=>b.classList.toggle("active",b.dataset.citf===c));
+  render();
+}
+
+function render(){
+  let filtered=allAlerts;
+  if(selTier!=="ALL")filtered=filtered.filter(a=>a.risk===selTier);
+  if(selCity!=="ALL")filtered=filtered.filter(a=>a.city===selCity);
+  document.getElementById("alert-count").textContent=`${filtered.length} alert${filtered!==1?"s":""}`;
+  const tl=document.getElementById("timeline");
+  if(!filtered.length){tl.innerHTML=`<div class="no-results">No alerts match the current filter.</div>`;return;}
+  tl.innerHTML=filtered.map((a,i)=>{
+    const cls={WATCH:"watch",WARNING:"warning",EMERGENCY:"emergency"}[a.risk]||"watch";
+    const ts=new Date(a.ts).toLocaleString("en-IN",{day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit",hour12:true});
+    return `<div class="al-row ${cls}" style="animation-delay:${Math.min(i,20)*30}ms">
+      <div class="al-time">${ts}</div>
+      <div>
+        <div class="al-city">${a.city}</div>
+        <div class="al-meta">Wind ${a.wind.toFixed(1)} km/h · Temp ${a.temp.toFixed(1)}°C · Rain ${a.rain} mm</div>
+      </div>
+      ${badge(a.risk)}
+      <div class="al-wind">${a.wind.toFixed(1)} km/h</div>
+    </div>`;
+  }).join("");
+}
+
+async function loadData(){
+  const r=await fetch(URL);const t=await r.text();
+  const j=JSON.parse(t.match(/google\.visualization\.Query\.setResponse\(([\s\S]*?)\);/)[1]);
+  const rows=j.table.rows;
+  allAlerts=[];
+  rows.forEach(row=>{
+    const c=row.c;if(!c||!c[1]?.v)return;
+    const city=String(c[1].v).trim();if(!isCity(city))return;
+    const wind=parseFloat(c[2]?.v)||0,temp=parseFloat(c[3]?.v)||0,rain=parseFloat(c[4]?.v)||0;
+    const risk=(c[5]?.v||"NORMAL").toUpperCase(),ts=c[7]?.v||"";
+    const alertVal=c[6]?.v;
+    const isAlert=alertVal===true||alertVal==="TRUE"||alertVal===1||String(alertVal).toLowerCase()==="true";
+    if(isAlert&&risk!=="NORMAL")allAlerts.push({city,wind,temp,rain,risk,ts});
+  });
+  allAlerts.reverse();
+
+  // Stats
+  const total=allAlerts.length;
+  const cities={};allAlerts.forEach(a=>{cities[a.city]=(cities[a.city]||0)+1;});
+  const topCity=Object.entries(cities).sort((a,b)=>b[1]-a[1])[0];
+  const emCount=allAlerts.filter(a=>a.risk==="EMERGENCY").length;
+  const warnCount=allAlerts.filter(a=>a.risk==="WARNING").length;
+  document.getElementById("stat-row").innerHTML=[
+    {l:"Total alerts",v:total,c:"amber"},{l:"Cities alerted",v:Object.keys(cities).length,c:"cyan"},
+    {l:"Most alerted",v:topCity?topCity[0]:"—",c:"ts"},{l:"Emergencies",v:emCount,c:emCount>0?"red":"green"}
+  ].map(m=>`<div class="og-metric"><div class="og-metric-label">${m.l}</div><div class="og-metric-value ${m.c}" style="${m.c==="ts"?"color:var(--ts);font-size:20px":""}">${m.v}</div></div>`).join("");
+
+  // City filter buttons
+  const uCities=["ALL",...Object.keys(cities).sort()];
+  document.getElementById("city-filters").innerHTML=uCities.map(c=>`<button class="fbtn${c==="ALL"?" active":""}" data-citf="${c}" onclick="setCity('${c}')">${c==="ALL"?"All cities":c}</button>`).join("");
+
+  const ots=document.getElementById("og-timestamp");if(ots)ots.textContent=`${total} alerts logged`;
+  document.getElementById("og-loading").style.display="none";
+  document.getElementById("og-content").style.display="block";
+  render();
+}
+loadData().catch(e=>{console.error(e);document.getElementById("og-loading").innerHTML=`<p style="color:var(--red)">Could not load data.</p>`;});
+</script>
+</body>
+</html>
