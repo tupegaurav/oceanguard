@@ -151,24 +151,34 @@ async function ragSubmit(){
   qEl.textContent=`"${q}"`;
   metaEl.textContent="";
 
-  try{
-    const res=await fetch(RAG_WEBHOOK,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({question:q})
-    });
-    const data=await res.json();
-    const answer=data.answer||"Sorry, I couldn't generate an answer from the available data.";
-    const cities=data.citiesAnalysed?.join(", ")||"all cities";
-    const rowCount=data.rowCount||0;
-    textEl.className="og-rag-answer-text";
-    textEl.innerHTML=answer.replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>").replace(/\n/g,"<br>");
-    metaEl.textContent=`${rowCount} readings analysed · ${cities}`;
-  }catch{
-    textEl.className="og-rag-answer-text";
-    textEl.innerHTML=`<span style="color:var(--red)">Could not reach the query service. Ensure OceanGuard_RAG workflow is active in n8n.</span>`;
-  }
+  const data      = await res.json();
+const answer    = data.answer || "Sorry, I couldn't generate an answer.";
+const cities    = data.citiesAnalysed?.join(", ") || "all cities";
+const rowCount  = data.rowCount || 0;
+const conf      = data.confidence || 0;
+const confLabel = data.confidenceLabel || "Unknown confidence";
+const confColor = data.confidenceColor || "amber";
 
-  btn.disabled=false;
-  btn.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Ask`;
-}
+// Colour map to CSS variables
+const colorMap = { green:"#00d98b", amber:"#f0a500", red:"#f04060" };
+const col = colorMap[confColor] || colorMap.amber;
+
+textEl.className = "og-rag-answer-text";
+textEl.innerHTML = answer
+  .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+  .replace(/\n/g, "<br>");
+
+// Confidence indicator
+metaEl.innerHTML = `
+  <div class="og-conf-bar-wrap">
+    <div class="og-conf-top">
+      <span class="og-conf-label" style="color:${col}">${confLabel}</span>
+      <span class="og-conf-score" style="color:${col}">${conf}%</span>
+    </div>
+    <div class="og-conf-track">
+      <div class="og-conf-fill" style="width:${conf}%;background:${col}"></div>
+    </div>
+    <div class="og-conf-detail">
+      Based on <strong>${rowCount}</strong> readings · <strong>${cities}</strong> · last <strong>${data.timeWindow || 7}</strong> days
+    </div>
+  </div>`;
