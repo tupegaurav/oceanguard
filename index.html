@@ -169,37 +169,6 @@
       </div>
     </div>
 
-    <!-- RAG QUERY BOX -->
-    <div class="og-sec" style="margin-top:2rem">Ask OceanGuard</div>
-    <div class="rag-card">
-      <div class="rag-intro">
-        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        Ask a natural language question about coastal conditions — powered by RAG + Llama 3
-      </div>
-      <div class="rag-suggestions">
-        <button class="rag-sug" onclick="askQuestion(this.textContent)">Was Mangalore dangerous last week?</button>
-        <button class="rag-sug" onclick="askQuestion(this.textContent)">Which city had the most alerts?</button>
-        <button class="rag-sug" onclick="askQuestion(this.textContent)">Is Chennai safe today?</button>
-        <button class="rag-sug" onclick="askQuestion(this.textContent)">How has Goa been this week?</button>
-      </div>
-      <div class="rag-input-row">
-        <input type="text" class="rag-input" id="rag-input"
-          placeholder="e.g. Which city had the highest wind speed this week?"
-          onkeydown="if(event.key==='Enter')submitQuery()"/>
-        <button class="rag-submit" onclick="submitQuery()" id="rag-btn">
-          <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-          Ask
-        </button>
-      </div>
-      <div class="rag-answer" id="rag-answer" style="display:none">
-        <div class="rag-answer-header">
-          <span class="rag-answer-q" id="rag-answer-q"></span>
-          <span class="rag-answer-meta" id="rag-answer-meta"></span>
-        </div>
-        <div class="rag-answer-text" id="rag-answer-text"></div>
-      </div>
-    </div>
-
   </div><!-- end dashboard -->
 </main>
 
