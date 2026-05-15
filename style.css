@@ -250,3 +250,36 @@ body::before{
   .rag-suggestions{gap:4px;}
   .rag-sug{font-size:10px;padding:4px 8px;}
 }
+/* ── CONFIDENCE INDICATOR ── */
+.og-conf-bar-wrap{margin-top:.5rem;}
+.og-conf-top{
+  display:flex;align-items:center;
+  justify-content:space-between;
+  margin-bottom:.35rem;
+}
+.og-conf-label{
+  font-family:var(--fm);font-size:11px;
+  font-weight:500;letter-spacing:.04em;
+}
+.og-conf-score{
+  font-family:var(--fm);font-size:11px;
+  font-weight:500;
+}
+.og-conf-track{
+  width:100%;height:4px;
+  background:rgba(255,255,255,0.06);
+  border-radius:2px;overflow:hidden;
+  margin-bottom:.5rem;
+}
+.og-conf-fill{
+  height:100%;border-radius:2px;
+  transition:width .8s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 0 8px currentColor;
+}
+.og-conf-detail{
+  font-family:var(--fm);font-size:10px;
+  color:var(--tm);line-height:1.5;
+}
+.og-conf-detail strong{
+  color:var(--ts);font-weight:400;
+}
