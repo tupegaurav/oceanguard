@@ -181,3 +181,83 @@ body::before{
 
 @media(max-width:900px){.og-metrics{grid-template-columns:repeat(2,1fr);}.og-links{gap:2px;}.og-link{padding:5px 10px;font-size:11px;}}
 @media(max-width:600px){.og-main{padding:1rem 1rem 4rem;}.og-nav{padding:0 1rem;}.og-brand-sub{display:none;}.og-metrics{grid-template-columns:repeat(2,1fr);gap:.6rem;}.og-metric-value{font-size:22px;}}
+
+/* ── MOBILE NAV FIX ── */
+@media(max-width:700px){
+
+  .og-nav{
+    flex-wrap:wrap;
+    height:auto;
+    padding:.75rem 1rem;
+    gap:.5rem;
+  }
+
+  .og-brand-sub{ display:none; }
+
+  .og-links{
+    order:3;
+    width:100%;
+    overflow-x:auto;
+    gap:2px;
+    padding-bottom:2px;
+    /* hide scrollbar but keep scrollable */
+    scrollbar-width:none;
+    -ms-overflow-style:none;
+  }
+  .og-links::-webkit-scrollbar{ display:none; }
+
+  .og-link{
+    font-size:10px;
+    padding:5px 10px;
+    white-space:nowrap;
+    flex-shrink:0;
+  }
+
+  .og-nav-right{
+    order:2;
+    margin-left:auto;
+  }
+
+  /* body needs more top padding since nav is now taller */
+  body{ padding-top:108px; }
+}
+
+/* ── PREDICTED ALERT CARDS ── */
+@media(max-width:700px){
+  .pred-grid{
+    grid-template-columns:1fr;
+  }
+}
+
+/* ── GENERAL MOBILE SPACING ── */
+@media(max-width:700px){
+  .og-main{ padding:1rem 1rem 5rem; }
+
+  .about-hero{ padding:1.5rem; }
+  .hero-title{ font-size:20px; }
+  .hero-title::after{ display:none; }
+
+  .two-col-about{
+    grid-template-columns:1fr;
+  }
+
+  .tier-explainer{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .cities-grid{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .compare-grid{
+    grid-template-columns:1fr;
+  }
+
+  .al-row{
+    grid-template-columns:1fr auto;
+  }
+
+  .profile-card{
+    flex-direction:column;
+  }
+}
