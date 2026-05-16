@@ -189,7 +189,7 @@ body::before{
 .og-rag-badge{font-size:9px;font-weight:600;padding:2px 5px;border-radius:4px;background:rgba(167,139,250,0.2);color:var(--purple);letter-spacing:.06em;}
 
 /* ── RAG MODAL ── */
-.og-rag-overlay{position:fixed;inset:0;z-index:400;background:rgba(6,13,26,0.88);backdrop-filter:blur(12px);display:flex;align-items:flex-start;justify-content:center;padding:80px 1.5rem 1.5rem;opacity:0;pointer-events:none;transition:opacity .2s ease;}
+.og-rag-overlay{position:fixed;inset:0;z-index:400;background:rgba(6,13,26,0.88);backdrop-filter:blur(12px);display:flex;align-items:flex-start;justify-content:center;padding:64px 1.5rem 2rem ;opacity:0;pointer-events:none;transition:opacity .2s ease;}
 .og-rag-overlay.open{opacity:1;pointer-events:all;}
 .og-rag-modal{background:var(--panel);border:1px solid rgba(167,139,250,0.3);border-radius:18px;width:100%;max-width:680px;box-shadow:0 0 60px rgba(167,139,250,0.1),0 24px 60px rgba(0,0,0,0.6);transform:translateY(-16px) scale(.97);transition:transform .25s cubic-bezier(.34,1.56,.64,1);overflow:hidden;position:relative;}
 .og-rag-modal::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(167,139,250,0.6),var(--cyan-m),transparent);}
@@ -199,7 +199,7 @@ body::before{
 .og-rag-modal-title svg{width:16px;height:16px;stroke:var(--purple);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
 .og-rag-close{width:30px;height:30px;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--tm);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;font-size:16px;line-height:1;}
 .og-rag-close:hover{background:rgba(255,255,255,.1);color:var(--tx);}
-.og-rag-modal-body{padding:1.5rem;}
+.og-rag-modal-body{   padding:1.5rem;   max-height:70vh;   overflow-y:auto;   scrollbar-width:thin;   scrollbar-color:var(--border) transparent; }
 .og-rag-intro{font-family:var(--fm);font-size:12px;color:var(--tm);line-height:1.6;margin-bottom:1.25rem;padding:.75rem 1rem;background:rgba(167,139,250,0.06);border:1px solid rgba(167,139,250,0.12);border-radius:8px;}
 .og-rag-suggestions{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.25rem;}
 .og-rag-sug{font-family:var(--fm);font-size:11px;padding:5px 11px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--ts);cursor:pointer;transition:all .15s;text-align:left;}
