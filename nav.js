@@ -106,12 +106,17 @@
   });
 })();
 
-/* ── RAG MODAL FUNCTIONS (global scope) ── */
+/* ── RAG CONFIG ── */
 var RAG_WEBHOOK = "https://gauravtupe.app.n8n.cloud/webhook/oceanguard-query";
 
+/* ── MODAL CONTROLS ── */
 function openRagModal(){
   var o = document.getElementById("og-rag-overlay");
-  if(o){ o.classList.add("open"); document.body.style.overflow = "hidden"; setTimeout(function(){ var inp = document.getElementById("og-rag-input"); if(inp) inp.focus(); }, 300); }
+  if(o){
+    o.classList.add("open");
+    document.body.style.overflow = "hidden";
+    setTimeout(function(){ var inp = document.getElementById("og-rag-input"); if(inp) inp.focus(); }, 300);
+  }
 }
 
 function closeRagModal(){
@@ -121,73 +126,142 @@ function closeRagModal(){
 
 function ragAsk(q){
   var inp = document.getElementById("og-rag-input");
-  if(inp){ inp.value = q; ragSubmit(); }
+  if(inp){ inp.value = q.trim(); ragSubmit(); }
 }
 
+/* ── MAIN RAG SUBMIT ── */
 async function ragSubmit(){
-  var inp     = document.getElementById("og-rag-input");
-  var q       = inp ? inp.value.trim() : "";
+  var inp = document.getElementById("og-rag-input");
+  var q   = inp ? inp.value.trim() : "";
   if(!q) return;
 
-  var btn     = document.getElementById("og-rag-btn");
-  var answerEl= document.getElementById("og-rag-answer");
-  var textEl  = document.getElementById("og-rag-text");
-  var qEl     = document.getElementById("og-rag-q");
-  var metaEl  = document.getElementById("og-rag-meta");
+  var btn      = document.getElementById("og-rag-btn");
+  var answerEl = document.getElementById("og-rag-answer");
+  var textEl   = document.getElementById("og-rag-text");
+  var qEl      = document.getElementById("og-rag-q");
+  var metaEl   = document.getElementById("og-rag-meta");
 
-  btn.disabled = true;
+  /* ── LOADING STATE ── */
+  btn.disabled  = true;
   btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Thinking...';
-
   answerEl.style.display = "block";
-  textEl.className = "og-rag-thinking";
-  textEl.innerHTML = '<div class="b-dot" style="background:var(--purple)"></div><div class="b-dot" style="background:var(--purple);animation-delay:.2s"></div><div class="b-dot" style="background:var(--purple);animation-delay:.4s"></div><span style="margin-left:6px">Retrieving data and generating answer...</span>';
+  textEl.className       = "og-rag-thinking";
+  textEl.innerHTML       = '<div class="b-dot" style="background:var(--purple)"></div>'
+                         + '<div class="b-dot" style="background:var(--purple);animation-delay:.2s"></div>'
+                         + '<div class="b-dot" style="background:var(--purple);animation-delay:.4s"></div>'
+                         + '<span style="margin-left:6px">Retrieving data and generating answer...</span>';
   qEl.textContent = "\u201C" + q + "\u201D";
   metaEl.innerHTML = "";
 
+  /* ── FETCH ── */
+  var httpStatus = 0;
+  var rawText    = "";
+
   try {
-    var res  = await fetch(RAG_WEBHOOK, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+    /* Step 1 — send request */
+    var res = await fetch(RAG_WEBHOOK, {
+      method:  "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept":       "application/json"
+      },
+      mode: "cors",
       body: JSON.stringify({ question: q })
     });
-    var data = await res.json();
 
+    httpStatus = res.status;
+    rawText    = await res.text(); /* read as text first — safe for any response */
+
+    /* Step 2 — handle non-OK HTTP status */
+    if(!res.ok){
+      var hint = httpStatus === 404
+        ? "Workflow not active — open OceanGuard_RAG in n8n and toggle it ON."
+        : httpStatus === 500
+        ? "n8n workflow error — check the execution log in n8n."
+        : "HTTP " + httpStatus + " error from n8n.";
+      throw new Error(hint);
+    }
+
+    /* Step 3 — parse JSON safely */
+    var data;
+    try {
+      data = JSON.parse(rawText);
+    } catch(_){
+      throw new Error("n8n returned a non-JSON response. Check the Respond to Webhook node configuration.");
+    }
+
+    /* Step 4 — render answer */
     var answer    = data.answer    || "Sorry, I could not generate an answer from the available data.";
     var cities    = (data.citiesAnalysed && data.citiesAnalysed.join(", ")) || "all cities";
-    var rowCount  = data.rowCount  || 0;
+    var rowCount  = data.rowCount        || 0;
     var conf      = data.confidence      || 0;
     var confLabel = data.confidenceLabel || "Unknown confidence";
     var confColor = data.confidenceColor || "amber";
     var timeWin   = data.timeWindow      || 7;
 
-    var colorMap  = { green: "#00d98b", amber: "#f0a500", red: "#f04060" };
-    var col       = colorMap[confColor] || colorMap.amber;
+    var colorMap = { green:"#00d98b", amber:"#f0a500", red:"#f04060" };
+    var col      = colorMap[confColor] || colorMap.amber;
 
     textEl.className = "og-rag-answer-text";
     textEl.innerHTML = answer
       .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
       .replace(/\n/g, "<br>");
 
+    /* Confidence bar */
     metaEl.innerHTML =
-      '<div class="og-conf-bar-wrap">' +
-        '<div class="og-conf-top">' +
-          '<span class="og-conf-label" style="color:' + col + '">' + confLabel + '</span>' +
-          '<span class="og-conf-score" style="color:' + col + '">' + conf + '%</span>' +
-        '</div>' +
-        '<div class="og-conf-track">' +
-          '<div class="og-conf-fill" style="width:' + conf + '%;background:' + col + '"></div>' +
-        '</div>' +
-        '<div class="og-conf-detail">' +
-          'Based on <strong>' + rowCount + '</strong> readings &nbsp;&middot;&nbsp; ' +
-          '<strong>' + cities + '</strong> &nbsp;&middot;&nbsp; last <strong>' + timeWin + '</strong> days' +
-        '</div>' +
-      '</div>';
+      '<div class="og-conf-bar-wrap">'
+    +   '<div class="og-conf-top">'
+    +     '<span class="og-conf-label" style="color:' + col + '">' + confLabel + '</span>'
+    +     '<span class="og-conf-score" style="color:' + col + '">' + conf + '%</span>'
+    +   '</div>'
+    +   '<div class="og-conf-track">'
+    +     '<div class="og-conf-fill" style="width:' + conf + '%;background:' + col + '"></div>'
+    +   '</div>'
+    +   '<div class="og-conf-detail">'
+    +     'Based on <strong>' + rowCount + '</strong> readings'
+    +     ' &nbsp;&middot;&nbsp; <strong>' + cities + '</strong>'
+    +     ' &nbsp;&middot;&nbsp; last <strong>' + timeWin + '</strong> days'
+    +   '</div>'
+    + '</div>';
 
   } catch(err) {
+    /* ── DIAGNOSTIC ERROR MESSAGE ── */
+    var errMsg  = err.message || "";
+    var display = "";
+
+    if(errMsg.includes("Failed to fetch") || errMsg.includes("NetworkError") || errMsg.includes("CORS")){
+      display = "<strong>Network / CORS error.</strong><br>"
+              + "The browser blocked the request. In your n8n Respond to Webhook node, "
+              + "add a response header: <code>Access-Control-Allow-Origin: *</code>";
+
+    } else if(errMsg.includes("not active") || httpStatus === 404){
+      display = "<strong>Workflow not active.</strong><br>"
+              + "Open <em>OceanGuard_RAG</em> in n8n and click the Active toggle in the top-right corner to turn it ON.";
+
+    } else if(errMsg.includes("non-JSON") || errMsg.includes("JSON")){
+      display = "<strong>Response format error.</strong><br>"
+              + "n8n sent back something unexpected. Check that your Respond to Webhook node "
+              + "has <em>Respond With: JSON</em> and the Response Body references the Format Response node.";
+
+    } else if(httpStatus === 500){
+      display = "<strong>n8n workflow error (500).</strong><br>"
+              + "One of your nodes crashed during execution. Open n8n → Executions to see the error.";
+
+    } else {
+      display = "<strong>Could not reach the query service.</strong><br>"
+              + (errMsg ? "Detail: " + errMsg : "Ensure OceanGuard_RAG workflow is active in n8n.");
+    }
+
     textEl.className = "og-rag-answer-text";
-    textEl.innerHTML = '<span style="color:var(--red)">Could not reach the query service. Ensure the OceanGuard_RAG workflow is active in n8n.</span>';
+    textEl.innerHTML = '<div style="color:var(--red);font-family:var(--fm);font-size:12px;line-height:1.7">'
+                     + display
+                     + '</div>';
   }
 
-  btn.disabled = false;
-  btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Ask';
+  /* ── RESET BUTTON ── */
+  btn.disabled  = false;
+  btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
+                + 'stroke-linecap="round" stroke-linejoin="round" width="13" height="13">'
+                + '<line x1="22" y1="2" x2="11" y2="13"/>'
+                + '<polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Ask';
 }
