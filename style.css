@@ -280,3 +280,77 @@ body::before {
     animation: none !important;
   }
 }
+/* ── MODERN 3D VISUALS ── */
+.og-main { perspective: 1000px; }
+
+/* Glassmorphism + Depth for Metrics & Cards */
+.og-metric, .og-card {
+  background: rgba(13, 27, 48, 0.65);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transform-style: preserve-3d;
+  transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.4s ease, border-color 0.3s ease;
+  overflow: visible;
+  position: relative;
+}
+
+/* Dynamic Cursor Glare */
+.og-metric::after, .og-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at var(--glare-x, 50%) var(--glare-y, 50%), rgba(255,255,255,0.18) 0%, transparent 65%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  border-radius: inherit;
+  z-index: 2;
+}
+.og-metric:hover::after, .og-card:hover::after { opacity: 1; }
+
+/* Hover Lift & Glow */
+.og-metric:hover, .og-card:hover {
+  border-color: rgba(0, 200, 180, 0.4);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5), 0 0 24px rgba(0, 200, 180, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* Animated Depth Mesh Background */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at 25% 40%, rgba(0, 200, 180, 0.1) 0%, transparent 45%),
+              radial-gradient(circle at 75% 25%, rgba(167, 139, 250, 0.08) 0%, transparent 45%),
+              radial-gradient(circle at 50% 85%, rgba(240, 165, 0, 0.06) 0%, transparent 45%);
+  filter: blur(70px);
+  pointer-events: none;
+  z-index: 0;
+  animation: meshFloat 18s ease-in-out infinite alternate;
+}
+@keyframes meshFloat {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-3%, 4%) scale(1.06); }
+  100% { transform: translate(3%, -3%) scale(1); }
+}
+
+/* Staggered 3D Entry Animation */
+@keyframes fadeUp3D {
+  from { opacity: 0; transform: translateY(18px) rotateX(5deg) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) rotateX(0) scale(1); }
+}
+.og-metric { animation: fadeUp3D 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) both; }
+.og-metric:nth-child(1) { animation-delay: 0.05s; }
+.og-metric:nth-child(2) { animation-delay: 0.1s; }
+.og-metric:nth-child(3) { animation-delay: 0.15s; }
+.og-metric:nth-child(4) { animation-delay: 0.2s; }
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .og-metric, .og-card, body::after, .og-metric::after, .og-card::after {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+}
