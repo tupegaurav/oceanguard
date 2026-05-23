@@ -289,3 +289,29 @@ async function ragSubmit(){
     });
   });
 })();
+/* ── 3D MOUSE TILT (DOM-SAFE) ── */
+document.addEventListener('DOMContentLoaded', function() {
+  const cards = document.querySelectorAll('.og-metric');
+  if(!cards.length || window.matchMedia('(pointer: coarse)').matches) return;
+
+  cards.forEach(card => {
+    card.addEventListener('mousemove', function(e) {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const cx = rect.width / 2;
+      const cy = rect.height / 2;
+      
+      const rX = ((y - cy) / cy) * -5;
+      const rY = ((x - cx) / cx) * 5;
+      
+      card.style.transform = `translateY(-6px) rotateX(${rX}deg) rotateY(${rY}deg)`;
+      card.style.boxShadow = '0 15px 35px rgba(0,0,0,0.4), 0 0 25px rgba(0,200,180,0.15)';
+    });
+
+    card.addEventListener('mouseleave', function() {
+      card.style.transform = '';
+      card.style.boxShadow = '';
+    });
+  });
+});
