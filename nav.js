@@ -315,3 +315,33 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 });
+/* ── 3D INTERACTIVE TILT & GLARE ── */
+document.addEventListener('DOMContentLoaded', function() {
+  const targets = document.querySelectorAll('.og-metric, .og-card');
+  if(!targets.length || window.matchMedia('(pointer: coarse)').matches) return;
+
+  targets.forEach(el => {
+    el.addEventListener('mousemove', function(e) {
+      const rect = el.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const cx = rect.width / 2;
+      const cy = rect.height / 2;
+
+      const rotateX = ((y - cy) / cy) * -5;
+      const rotateY = ((x - cx) / cx) * 5;
+
+      el.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+      el.style.setProperty('--glare-x', `${(x / rect.width) * 100}%`);
+      el.style.setProperty('--glare-y', `${(y / rect.height) * 100}%`);
+      el.style.boxShadow = '0 22px 55px rgba(0,0,0,0.55), 0 0 28px rgba(0,200,180,0.12), inset 0 1px 0 rgba(255,255,255,0.1)';
+    });
+
+    el.addEventListener('mouseleave', function() {
+      el.style.transform = '';
+      el.style.boxShadow = '';
+      el.style.setProperty('--glare-x', '50%');
+      el.style.setProperty('--glare-y', '50%');
+    });
+  });
+});
