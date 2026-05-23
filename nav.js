@@ -265,3 +265,27 @@ async function ragSubmit(){
                 + '<line x1="22" y1="2" x2="11" y2="13"/>'
                 + '<polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Ask';
 }
+/* ── 3D MOUSE TILT EFFECT (Optional) ── */
+(function(){
+  const cards = document.querySelectorAll('.og-metric');
+  if(!cards.length || window.matchMedia('(pointer: coarse)').matches) return;
+
+  cards.forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      
+      const rotateX = ((y - centerY) / centerY) * -4;
+      const rotateY = ((x - centerX) / centerX) * 4;
+      
+      card.style.transform = `perspective(1200px) translateY(-8px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    });
+
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = 'perspective(1200px) translateY(0) rotateX(0) rotateY(0)';
+    });
+  });
+})();
