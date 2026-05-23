@@ -283,3 +283,56 @@ body::before{
 .og-conf-detail strong{
   color:var(--ts);font-weight:400;
 }
+/* ── 3D DEPTH & HOVER ENHANCEMENTS ── */
+.og-main { perspective: 1200px; }
+
+@media (hover: hover) {
+  .og-metric {
+    transform: translateZ(0);
+    transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1), 
+                box-shadow 0.35s ease, border-color 0.2s ease;
+  }
+  .og-metric:hover {
+    transform: translateY(-8px) rotateX(3deg);
+    box-shadow: 0 16px 40px rgba(0, 200, 180, 0.12), 
+                0 6px 16px rgba(0, 0, 0, 0.4);
+  }
+
+  .og-card {
+    transform: translateZ(0);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .og-card:hover {
+    transform: translateY(-4px) scale(1.005);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  }
+
+  .og-btn, .og-rag-btn {
+    transform: translateZ(0);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .og-btn:hover, .og-rag-btn:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 20px rgba(0, 200, 180, 0.15);
+  }
+  .og-btn:active, .og-rag-btn:active {
+    transform: translateY(0) scale(0.98);
+  }
+}
+
+/* 3D Modal Pop-In */
+.og-rag-modal {
+  transform: translateY(30px) rotateX(4deg) scale(0.95);
+  transform-origin: top center;
+}
+.og-rag-overlay.open .og-rag-modal {
+  transform: translateY(0) rotateX(0) scale(1);
+}
+
+/* Accessibility: Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .og-metric, .og-card, .og-btn, .og-rag-btn, .og-rag-modal {
+    transition: none !important;
+    transform: none !important;
+  }
+}
