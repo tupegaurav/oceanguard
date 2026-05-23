@@ -336,3 +336,44 @@ body::before{
     transform: none !important;
   }
 }
+/* ── 3D DEPTH (OVERRIDE-SAFE) ── */
+.og-main { perspective: 1000px; }
+
+.og-metric {
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), 
+              box-shadow 0.3s ease, border-color 0.2s ease !important;
+  transform-style: preserve-3d;
+}
+.og-metric:hover {
+  transform: translateY(-6px) rotateX(4deg) !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4), 
+              0 0 20px rgba(0, 200, 180, 0.15) !important;
+  border-color: var(--cyan-m) !important;
+}
+
+.og-card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease !important;
+}
+.og-card:hover {
+  transform: translateY(-4px) scale(1.005) !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35) !important;
+}
+
+.og-btn, .og-rag-btn {
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+.og-btn:hover, .og-rag-btn:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 16px rgba(0, 200, 180, 0.2) !important;
+}
+.og-btn:active, .og-rag-btn:active {
+  transform: translateY(0) scale(0.98) !important;
+}
+
+/* Modal 3D entry */
+.og-rag-overlay:not(.open) .og-rag-modal {
+  transform: translateY(20px) rotateX(3deg) scale(0.96) !important;
+}
+.og-rag-overlay.open .og-rag-modal {
+  transform: translateY(0) scale(1) !important;
+}
