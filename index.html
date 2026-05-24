@@ -17,6 +17,88 @@
 .metric-value.cyan{color:var(--cyan);}.metric-value.amber{color:var(--amber);}.metric-value.red{color:var(--red);}.metric-value.green{color:var(--green);}
 .metric-sub{font-family:var(--fm);font-size:11px;color:var(--tm);margin-top:.4rem;}
 
+/* ══════════════════════════════════════
+   3D COASTAL MAP
+══════════════════════════════════════ */
+.og-3d-section{margin-bottom:1.75rem;}
+
+.og-3d-card{
+  position:relative;
+  background:#050c18;
+  border:1px solid var(--border);
+  border-radius:14px;
+  overflow:hidden;
+  height:460px;
+  cursor:grab;
+}
+.og-3d-card:active{cursor:grabbing;}
+
+#og-3d-canvas{
+  width:100%;height:100%;display:block;
+}
+
+/* Floating city labels above columns */
+.og-3d-labels{
+  position:absolute;inset:0;
+  pointer-events:none;overflow:hidden;
+}
+.og-city-lbl{
+  position:absolute;
+  font-family:var(--fm);font-size:9.5px;letter-spacing:.04em;
+  transform:translate(-50%,-100%);
+  pointer-events:none;text-align:center;white-space:nowrap;
+  line-height:1.5;
+  filter:drop-shadow(0 1px 8px rgba(0,0,0,1));
+  transition:opacity .2s;
+}
+.og-city-lbl b{display:block;font-weight:600;font-size:10px;}
+.og-city-lbl span{font-size:8.5px;color:rgba(255,255,255,0.45);}
+
+/* Hover tooltip */
+.og-3d-tooltip{
+  position:absolute;
+  background:rgba(6,12,28,0.97);
+  border:1px solid rgba(0,200,180,0.22);
+  border-radius:11px;
+  padding:11px 14px;
+  font-family:var(--fm);font-size:11px;color:var(--ts);
+  pointer-events:none;z-index:30;
+  display:none;
+  box-shadow:0 8px 40px rgba(0,0,0,0.7),0 0 0 1px rgba(0,200,180,0.06);
+  min-width:158px;
+  backdrop-filter:blur(6px);
+}
+.og-3d-tooltip::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(0,200,180,0.4),transparent);
+  border-radius:11px 11px 0 0;
+}
+.tt-city{font-size:12.5px;font-weight:700;color:var(--tx);margin-bottom:7px;padding-bottom:7px;border-bottom:1px solid rgba(255,255,255,0.06);}
+.tt-row{display:flex;justify-content:space-between;gap:18px;line-height:1.9;}
+.tt-key{color:var(--tm);}
+.tt-val{font-weight:500;color:var(--tx);}
+.tt-risk{
+  margin-top:7px;padding-top:7px;border-top:1px solid rgba(255,255,255,0.06);
+  font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+}
+
+/* Bottom overlay bar */
+.og-3d-foot{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:12px 18px 14px;
+  background:linear-gradient(transparent, rgba(5,12,24,0.96) 55%);
+  display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;
+}
+.og-3d-badge{
+  display:flex;align-items:center;gap:6px;
+  font-family:var(--fm);font-size:9px;color:rgba(255,255,255,0.35);letter-spacing:.06em;text-transform:uppercase;
+}
+.og-3d-badge svg{width:11px;height:11px;stroke:var(--cyan);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;}
+.og-3d-legend{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-left:6px;}
+.og-3d-leg-item{display:flex;align-items:center;gap:4px;font-family:var(--fm);font-size:9px;color:rgba(255,255,255,0.38);}
+.og-3d-leg-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.og-3d-hint{margin-left:auto;font-family:var(--fm);font-size:9px;color:rgba(255,255,255,0.22);letter-spacing:.03em;}
+
 /* ── AI BRIEFING ── */
 .briefing-card{background:var(--panel);border:1px solid rgba(167,139,250,0.2);border-radius:14px;padding:1.5rem;margin-bottom:1.75rem;position:relative;overflow:hidden;}
 .briefing-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(167,139,250,0.5),transparent);}
@@ -60,30 +142,6 @@
 .bar-fill::after{content:'';position:absolute;right:0;top:50%;transform:translateY(-50%);width:8px;height:8px;border-radius:50%;background:inherit;box-shadow:0 0 6px currentColor;}
 .bar-val{font-family:var(--fm);font-size:11px;color:var(--tm);width:34px;text-align:right;flex-shrink:0;}
 
-/* ── RAG QUERY BOX ── */
-.rag-card{background:var(--panel);border:1px solid rgba(167,139,250,0.2);border-radius:14px;padding:1.5rem;margin-bottom:1.75rem;position:relative;overflow:hidden;}
-.rag-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(167,139,250,0.5),var(--cyan-m),transparent);}
-.rag-intro{display:flex;align-items:center;gap:8px;font-family:var(--fm);font-size:12px;color:var(--tm);margin-bottom:1rem;}
-.rag-intro svg{width:14px;height:14px;stroke:var(--purple);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;}
-.rag-suggestions{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem;}
-.rag-sug{font-family:var(--fm);font-size:11px;padding:5px 11px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--ts);cursor:pointer;transition:all .15s;text-align:left;}
-.rag-sug:hover{border-color:rgba(167,139,250,0.3);color:var(--purple);background:var(--purple-d);}
-.rag-input-row{display:flex;gap:.75rem;}
-.rag-input{flex:1;background:var(--panel-alt);border:1px solid var(--border);border-radius:10px;padding:.75rem 1rem;font-family:var(--fm);font-size:13px;color:var(--tx);outline:none;transition:border-color .2s;}
-.rag-input:focus{border-color:rgba(167,139,250,0.4);}
-.rag-input::placeholder{color:var(--tm);}
-.rag-submit{display:flex;align-items:center;gap:6px;background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.3);border-radius:10px;padding:.75rem 1.25rem;font-family:var(--fm);font-size:12px;color:var(--purple);cursor:pointer;transition:all .2s;white-space:nowrap;}
-.rag-submit:hover{background:rgba(167,139,250,0.25);}
-.rag-submit:disabled{opacity:.5;cursor:not-allowed;}
-.rag-submit svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-.rag-answer{margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid var(--border);animation:fadeUp .3s ease;}
-.rag-answer-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.75rem;flex-wrap:wrap;gap:6px;}
-.rag-answer-q{font-family:var(--fm);font-size:11px;color:var(--purple);letter-spacing:.04em;font-style:italic;}
-.rag-answer-meta{font-family:var(--fm);font-size:10px;color:var(--tm);}
-.rag-answer-text{font-size:14px;line-height:1.8;color:var(--ts);}
-.rag-answer-text strong{color:var(--tx);font-weight:500;}
-.rag-thinking{display:flex;align-items:center;gap:8px;font-family:var(--fm);font-size:12px;color:var(--tm);}
-
 /* ── TREND MODAL ── */
 .modal-overlay{position:fixed;inset:0;z-index:300;background:rgba(6,13,26,0.85);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:1.5rem;opacity:0;pointer-events:none;transition:opacity .25s ease;}
 .modal-overlay.open{opacity:1;pointer-events:all;}
@@ -112,21 +170,52 @@
 .leg-dash{width:16px;border-top:2px dashed var(--amber);}
 #trend-sum{margin-left:auto;color:var(--ts);}
 
-@media(max-width:900px){.metrics{grid-template-columns:repeat(2,1fr);}.two-col{grid-template-columns:1fr;}}
-@media(max-width:600px){.metrics{grid-template-columns:repeat(2,1fr);gap:.6rem;}.metric-value{font-size:24px;}}
+@media(max-width:900px){.metrics{grid-template-columns:repeat(2,1fr);}.two-col{grid-template-columns:1fr;}.og-3d-card{height:320px;}}
+@media(max-width:600px){.metrics{grid-template-columns:repeat(2,1fr);gap:.6rem;}.metric-value{font-size:24px;}.og-3d-card{height:260px;}.og-3d-hint{display:none;}}
 </style>
 </head>
 <body>
 <script src="nav.js"></script>
 <main class="og-main">
+
   <div id="og-loading">
     <div class="og-wave"><span></span><span></span><span></span><span></span><span></span></div>
     <div>Fetching coastal data...</div>
   </div>
+
   <div id="og-dashboard" style="display:none">
 
     <!-- METRICS -->
     <div class="metrics" id="metrics-row"></div>
+
+    <!-- 3D COASTAL RISK MAP -->
+    <div class="og-sec">Live 3D Coastal Risk Map</div>
+    <div class="og-3d-section">
+      <div class="og-3d-card" id="og-3d-card">
+        <canvas id="og-3d-canvas"></canvas>
+        <div id="og-3d-labels" class="og-3d-labels"></div>
+        <div id="og-3d-tooltip" class="og-3d-tooltip">
+          <div class="tt-city" id="tt-city"></div>
+          <div class="tt-row"><span class="tt-key">Wind</span><span class="tt-val" id="tt-wind"></span></div>
+          <div class="tt-row"><span class="tt-key">Temp</span><span class="tt-val" id="tt-temp"></span></div>
+          <div class="tt-row"><span class="tt-key">Rain</span><span class="tt-val" id="tt-rain"></span></div>
+          <div class="tt-risk" id="tt-risk"></div>
+        </div>
+        <div class="og-3d-foot">
+          <div class="og-3d-badge">
+            <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            India Coastal Monitor · 7,500 km
+          </div>
+          <div class="og-3d-legend">
+            <div class="og-3d-leg-item"><span class="og-3d-leg-dot" style="background:#00d98b"></span>Normal</div>
+            <div class="og-3d-leg-item"><span class="og-3d-leg-dot" style="background:#00c8b4"></span>Watch</div>
+            <div class="og-3d-leg-item"><span class="og-3d-leg-dot" style="background:#f0a500"></span>Warning</div>
+            <div class="og-3d-leg-item"><span class="og-3d-leg-dot" style="background:#f04060"></span>Emergency</div>
+          </div>
+          <div class="og-3d-hint">⟳ Drag to rotate · Hover city for data</div>
+        </div>
+      </div>
+    </div>
 
     <!-- AI BRIEFING -->
     <div class="og-sec">AI intelligence briefing</div>
@@ -169,7 +258,7 @@
       </div>
     </div>
 
-  </div><!-- end dashboard -->
+  </div><!-- /og-dashboard -->
 </main>
 
 <!-- TREND MODAL -->
@@ -206,7 +295,7 @@
 </div>
 
 <footer class="og-footer">
-  Data · <span>Open-Meteo</span> &nbsp;|&nbsp; Pipeline · <span>n8n</span> &nbsp;|&nbsp; AI · <span>Groq / Llama 3</span> &nbsp;|&nbsp; Built by <span>OceanGuard</span><br>
+  Data · <span>Open-Meteo</span> &nbsp;|&nbsp; Pipeline · <span>n8n</span> &nbsp;|&nbsp; AI · <span>Groq / Llama 3</span> &nbsp;|&nbsp; 3D · <span>Three.js</span> &nbsp;|&nbsp; Built by <span>OceanGuard</span><br>
   Refreshes every 60 seconds · Monitoring India's 7,500 km coastline
   <div class="og-footer-links">
     <a href="analytics.html">Analytics</a>
@@ -216,8 +305,13 @@
   </div>
 </footer>
 
+<!-- THREE.JS r128 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
 <script>
-/* ── CONFIG ── */
+/* ═══════════════════════════════════════════
+   GLOBAL CONFIG
+═══════════════════════════════════════════ */
 const SHEET       = "1LHddh6bg9M0hskAypVRr_iF5h4SLzM1yw1vuFetn51s";
 const DATA_URL    = `https://docs.google.com/spreadsheets/d/${SHEET}/gviz/tq?tqx=out:json&sheet=Sheet1`;
 const BRIEF_URL   = `https://docs.google.com/spreadsheets/d/${SHEET}/gviz/tq?tqx=out:json&sheet=Briefings`;
@@ -225,36 +319,539 @@ const WEBHOOK_URL = "https://gauravtupe1006.app.n8n.cloud/webhook/oceanguard-que
 
 const TIER    = {NORMAL:0,WATCH:1,WARNING:2,EMERGENCY:3};
 const BAR_CLR = {NORMAL:"#00d98b",WATCH:"#00c8b4",WARNING:"#f0a500",EMERGENCY:"#f04060"};
-const CITIES  = [
-  {city:"Mumbai",          lat:19.0760,lon:72.8777,threshold:14},
-  {city:"Goa",             lat:15.4909,lon:73.8278,threshold:13},
-  {city:"Mangalore",       lat:12.9141,lon:74.8560,threshold:13},
-  {city:"Kochi",           lat:9.9312, lon:76.2673,threshold:12},
-  {city:"Thiruvananthapuram",lat:8.5241,lon:76.9366,threshold:11},
-  {city:"Pondicherry",     lat:11.9416,lon:79.8083,threshold:12},
-  {city:"Chennai",         lat:13.0827,lon:80.2707,threshold:12},
-  {city:"Visakhapatnam",   lat:17.6868,lon:83.2185,threshold:13},
-  {city:"Kolkata",         lat:22.5726,lon:88.3639,threshold:12}
+
+/* 9 monitored cities — real lat/lon for coastline context */
+const CITIES = [
+  {city:"Mumbai",            lat:19.0760,lon:72.8777,threshold:14},
+  {city:"Goa",               lat:15.4909,lon:73.8278,threshold:13},
+  {city:"Mangalore",         lat:12.9141,lon:74.8560,threshold:13},
+  {city:"Kochi",             lat:9.9312, lon:76.2673,threshold:12},
+  {city:"Thiruvananthapuram",lat:8.5241, lon:76.9366,threshold:11},
+  {city:"Pondicherry",       lat:11.9416,lon:79.8083,threshold:12},
+  {city:"Chennai",           lat:13.0827,lon:80.2707,threshold:12},
+  {city:"Visakhapatnam",     lat:17.6868,lon:83.2185,threshold:13},
+  {city:"Kolkata",           lat:22.5726,lon:88.3639,threshold:12}
 ];
 const TH = Object.fromEntries(CITIES.map(c=>[c.city,c.threshold]));
 
-/* ── HELPERS ── */
+/* ═══════════════════════════════════════════
+   3-D MAP — CONSTANTS
+═══════════════════════════════════════════ */
+
+/* Scene positions hand-tuned to match India's real coastal geography.
+   Arabian Sea cities on the left (negative X), Bay of Bengal on right.
+   Scene centre = approximately 80.5°E, 15.5°N               */
+const CITY_POS = {
+  "Mumbai":             { x:-10.8, z:-3.7 },
+  "Goa":                { x:-9.5,  z:-0.0 },
+  "Mangalore":          { x:-8.1,  z: 2.8 },
+  "Kochi":              { x:-6.1,  z: 5.8 },
+  "Thiruvananthapuram": { x:-5.2,  z: 7.3 },
+  "Pondicherry":        { x:-1.1,  z: 3.6 },
+  "Chennai":            { x:-0.5,  z: 2.4 },
+  "Visakhapatnam":      { x: 3.7,  z:-2.2 },
+  "Kolkata":            { x:10.8,  z:-7.4 }
+};
+
+/* Risk colour maps */
+const RISK_HEX = {NORMAL:0x00d98b,WATCH:0x00c8b4,WARNING:0xf0a500,EMERGENCY:0xf04060};
+const RISK_CSS = {NORMAL:"#00d98b",WATCH:"#00c8b4",WARNING:"#f0a500",EMERGENCY:"#f04060"};
+
+/* Simplified India coastline (west→south→east) for decorative line */
+const COASTLINE = [
+  [19.1,72.9],[18.5,73.0],[17.8,73.1],[17.0,73.3],[16.5,73.6],
+  [15.5,73.8],[14.8,74.1],[14.0,74.4],[13.5,74.7],[12.9,74.9],
+  [12.3,75.1],[11.7,75.4],[11.0,75.7],[10.5,76.0],[9.9,76.3],
+  [9.5,76.5],[9.0,76.6],[8.5,76.9],[8.2,77.4],[8.2,77.7],
+  [8.4,78.1],[8.8,78.6],[9.2,79.1],[10.0,79.4],[10.8,79.5],
+  [11.9,79.8],[12.6,80.0],[13.1,80.3],[13.7,80.2],[14.3,80.1],
+  [14.9,80.2],[15.5,80.3],[16.0,80.6],[16.5,81.2],[17.0,81.8],
+  [17.5,82.3],[17.7,83.2],[18.1,83.7],[18.5,84.2],[19.0,84.8],
+  [19.5,85.0],[20.0,86.0],[20.5,86.7],[21.0,87.0],[21.5,87.5],
+  [22.0,88.0],[22.6,88.4]
+];
+
+/* Centre / scale for lat-lon → scene XZ */
+const MAP_CX=80.5, MAP_CZ=15.5, MAP_SX=12/8.5, MAP_SZ=8/7.5;
+function ll2xz(lat,lon){ return {x:(lon-MAP_CX)*MAP_SX, z:-(lat-MAP_CZ)*MAP_SZ}; }
+
+/* ═══════════════════════════════════════════
+   3-D STATE
+═══════════════════════════════════════════ */
+const G3 = {
+  scene:null, camera:null, renderer:null,
+  worldGroup:null, colGroup:null, pulseGroup:null,
+  ocean:null, oceanGeo:null,
+  ready:false,
+  autoAngle:0.12,   // cumulative auto-rotation radians
+  dragDelta:0,      // additional radians from drag
+  isDragging:false,
+  lastMouseX:0,
+  pulseRings:[],
+  hoveredCity:null,
+  projVec:null      // reusable THREE.Vector3 for projection
+};
+
+/* Per-city label metadata populated in update3D */
+let labelMeta = [];
+
+/* ═══════════════════════════════════════════
+   3-D INIT
+═══════════════════════════════════════════ */
+function init3D(){
+  if(!window.THREE){ return; }
+
+  const card   = document.getElementById('og-3d-card');
+  const canvas = document.getElementById('og-3d-canvas');
+  if(!card||!canvas) return;
+
+  try{
+    G3.projVec = new THREE.Vector3();
+    const W = card.clientWidth, H = card.clientHeight;
+
+    /* ── Scene ── */
+    G3.scene = new THREE.Scene();
+    G3.scene.background = new THREE.Color(0x040b17);
+    G3.scene.fog = new THREE.FogExp2(0x040b17, 0.016);
+
+    /* ── Camera ── */
+    G3.camera = new THREE.PerspectiveCamera(42, W/H, 0.1, 400);
+    G3.camera.position.set(0, 23, 18);
+    G3.camera.lookAt(0, 0, 0);
+
+    /* ── Renderer ── */
+    G3.renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:false});
+    G3.renderer.setSize(W, H);
+    G3.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    G3.renderer.shadowMap.enabled = true;
+    G3.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+    /* ── Groups ── */
+    G3.worldGroup  = new THREE.Group();
+    G3.colGroup    = new THREE.Group();
+    G3.pulseGroup  = new THREE.Group();
+    G3.scene.add(G3.worldGroup);
+    G3.worldGroup.add(G3.colGroup);
+    G3.worldGroup.add(G3.pulseGroup);
+
+    /* ── Lighting ── */
+    G3.scene.add(new THREE.AmbientLight(0x061422, 5));
+
+    const sun = new THREE.DirectionalLight(0x88ddcc, 0.7);
+    sun.position.set(8, 20, 12);
+    sun.castShadow = true;
+    sun.shadow.camera.near = 1; sun.shadow.camera.far = 80;
+    sun.shadow.camera.left = -20; sun.shadow.camera.right = 20;
+    sun.shadow.camera.top  =  15; sun.shadow.camera.bottom=-15;
+    sun.shadow.mapSize.setScalar(1024);
+    G3.scene.add(sun);
+
+    const fill = new THREE.DirectionalLight(0x1a3060, 0.45);
+    fill.position.set(-14, 8, -8);
+    G3.scene.add(fill);
+
+    const rim = new THREE.PointLight(0x002820, 1.2, 70);
+    rim.position.set(0, -1, 0);
+    G3.worldGroup.add(rim);
+
+    /* ── Ocean ── */
+    buildOcean();
+
+    /* ── Grid ── */
+    const grid = new THREE.GridHelper(36, 28, 0x071222, 0x071222);
+    grid.position.y = -0.38;
+    G3.worldGroup.add(grid);
+
+    /* ── Coastline ── */
+    buildCoastline();
+
+    /* ── Event listeners ── */
+    attachEvents(canvas, card);
+
+    /* ── Resize ── */
+    if(window.ResizeObserver){
+      new ResizeObserver(()=>{
+        const W2=card.clientWidth, H2=card.clientHeight;
+        G3.camera.aspect=W2/H2;
+        G3.camera.updateProjectionMatrix();
+        G3.renderer.setSize(W2,H2);
+      }).observe(card);
+    }
+
+    G3.ready = true;
+    loop3D();
+
+  }catch(err){
+    console.error('[OG-3D]',err);
+  }
+}
+
+/* ── Ocean plane with animated wave vertices ── */
+function buildOcean(){
+  G3.oceanGeo = new THREE.PlaneGeometry(38, 26, 48, 32);
+  G3.oceanGeo.rotateX(-Math.PI/2);
+
+  const oMat = new THREE.MeshPhongMaterial({
+    color:0x020d1f,
+    emissive:0x010912,
+    specular:0x004040,
+    shininess:60,
+    transparent:true,
+    opacity:0.94
+  });
+  G3.ocean = new THREE.Mesh(G3.oceanGeo, oMat);
+  G3.ocean.position.y = -0.40;
+  G3.ocean.receiveShadow = true;
+  G3.worldGroup.add(G3.ocean);
+}
+
+/* ── Coastline ribbon ── */
+function buildCoastline(){
+  const pts = COASTLINE.map(([lat,lon])=>{
+    const {x,z}=ll2xz(lat,lon);
+    return new THREE.Vector3(x, 0.05, z);
+  });
+
+  /* Primary teal line */
+  const geo1 = new THREE.BufferGeometry().setFromPoints(pts);
+  G3.worldGroup.add(new THREE.Line(geo1,
+    new THREE.LineBasicMaterial({color:0x004038,transparent:true,opacity:0.85})));
+
+  /* Glow overlay */
+  const geo2 = geo1.clone();
+  const glowLine = new THREE.Line(geo2,
+    new THREE.LineBasicMaterial({color:0x00c8b4,transparent:true,opacity:0.14}));
+  glowLine.position.y = 0.02;
+  G3.worldGroup.add(glowLine);
+
+  /* Small dots along coast */
+  const dotGeo = new THREE.SphereGeometry(0.06,5,5);
+  const dotMat = new THREE.MeshBasicMaterial({color:0x005044,transparent:true,opacity:0.50});
+  pts.forEach(p=>{
+    const d=new THREE.Mesh(dotGeo,dotMat.clone());
+    d.position.copy(p);
+    G3.worldGroup.add(d);
+  });
+}
+
+/* ═══════════════════════════════════════════
+   3-D UPDATE — called each time data loads
+═══════════════════════════════════════════ */
+function update3D(cities){
+  if(!G3.ready) return;
+
+  /* Clear old markers */
+  [G3.colGroup, G3.pulseGroup].forEach(grp=>{
+    while(grp.children.length) grp.remove(grp.children[0]);
+  });
+  G3.pulseRings = [];
+  labelMeta     = [];
+
+  /* Max wind for height scaling */
+  const maxW = Math.max(...cities.map(c=>c.wind||0), 18);
+
+  /* Shared small geometries */
+  const baseDiskGeo = new THREE.CylinderGeometry(0.30,0.32,0.07,20);
+  const capGeo      = new THREE.SphereGeometry(0.15,10,8);
+  const ringGeo     = new THREE.RingGeometry(0.22,0.30,24);
+  const pRingGeo    = new THREE.RingGeometry(0.26,0.34,28);
+
+  cities.forEach(info=>{
+    const {city, wind=0, risk='NORMAL', temp=0, rain=0} = info;
+    const pos = CITY_POS[city];
+    if(!pos) return;
+
+    const {x,z}   = pos;
+    const hexCol   = RISK_HEX[risk] || RISK_HEX.NORMAL;
+    const cssCol   = RISK_CSS[risk] || RISK_CSS.NORMAL;
+    const colH     = 0.30 + (wind/maxW)*5.0;   // column height
+    const baseEmit = {NORMAL:0.18,WATCH:0.25,WARNING:0.35,EMERGENCY:0.50}[risk]||0.18;
+
+    /* — Base disk — */
+    G3.colGroup.add(Object.assign(
+      new THREE.Mesh(baseDiskGeo,
+        new THREE.MeshPhongMaterial({color:0x07162c,emissive:0x030c1c,shininess:15})),
+      {position:{x,y:0.035,z}}
+    ));
+
+    /* — Main column — */
+    const colGeo = new THREE.CylinderGeometry(0.12,0.17,colH,9);
+    const colMat = new THREE.MeshPhongMaterial({
+      color:hexCol, emissive:hexCol,
+      emissiveIntensity:baseEmit,
+      transparent:true, opacity:0.87, shininess:28
+    });
+    const col = new THREE.Mesh(colGeo, colMat);
+    col.position.set(x, colH/2+0.07, z);
+    col.castShadow = true;
+    col.userData = {city, wind, risk, temp, rain, baseEmit};
+    G3.colGroup.add(col);
+
+    /* — Cap glow — */
+    const capMat = new THREE.MeshPhongMaterial({
+      color:hexCol, emissive:hexCol,
+      emissiveIntensity:0.70, shininess:55
+    });
+    const cap = new THREE.Mesh(capGeo, capMat);
+    cap.position.set(x, colH+0.22, z);
+    cap.userData = {city, wind, risk, temp, rain, baseEmit:0.70};
+    G3.colGroup.add(cap);
+
+    /* — Ring on ground — */
+    const ringMesh = new THREE.Mesh(ringGeo,
+      new THREE.MeshBasicMaterial({color:hexCol,transparent:true,opacity:0.30,side:THREE.DoubleSide}));
+    ringMesh.rotation.x = -Math.PI/2;
+    ringMesh.position.set(x, 0.09, z);
+    G3.colGroup.add(ringMesh);
+
+    /* — Point light for alert levels — */
+    if(risk==='WARNING'||risk==='EMERGENCY'){
+      const pl = new THREE.PointLight(hexCol,
+        risk==='EMERGENCY'?1.1:0.60, 6.0);
+      pl.position.set(x, 1.4, z);
+      G3.colGroup.add(pl);
+    }
+
+    /* — Pulse rings — */
+    if(risk!=='NORMAL'){
+      const count = risk==='EMERGENCY'?3:2;
+      for(let p=0;p<count;p++){
+        const pm = new THREE.Mesh(pRingGeo,
+          new THREE.MeshBasicMaterial({color:hexCol,transparent:true,opacity:0,side:THREE.DoubleSide}));
+        pm.rotation.x=-Math.PI/2;
+        pm.position.set(x,0.10,z);
+        G3.pulseGroup.add(pm);
+        G3.pulseRings.push({
+          mesh:pm, speed:0.72,
+          offset:p*(1/count),
+          maxScale:3.4+p*0.55
+        });
+      }
+    }
+
+    /* — Label metadata — */
+    const shortName = city.length>11?city.slice(0,9)+'…':city;
+    labelMeta.push({city, x, y3d:colH+0.72, z, cssCol, wind, shortName, el:null});
+  });
+
+  /* Build DOM label elements */
+  const labDiv = document.getElementById('og-3d-labels');
+  if(labDiv){
+    labDiv.innerHTML='';
+    labelMeta.forEach(lbl=>{
+      const d = document.createElement('div');
+      d.className = 'og-city-lbl';
+      d.style.color = lbl.cssCol;
+      d.style.display = 'none';
+      d.innerHTML = `<b>${lbl.shortName}</b><span>${lbl.wind.toFixed(1)} km/h</span>`;
+      labDiv.appendChild(d);
+      lbl.el = d;
+    });
+  }
+
+  /* Entrance animation */
+  animateEntrance();
+}
+
+/* ── Columns grow from zero ── */
+function animateEntrance(){
+  const cols = G3.colGroup.children.filter(m=>m.userData?.city&&m.geometry?.type==='CylinderGeometry');
+  const maxW = Math.max(...labelMeta.map(l=>l.wind),18);
+  cols.forEach(c=>{c.scale.y=0.01;c.position.y=0;});
+  let t0=null;
+  (function step(ts){
+    if(!t0) t0=ts;
+    const p=Math.min((ts-t0)/900,1);
+    const e=1-Math.pow(1-p,3);
+    cols.forEach(c=>{
+      const h=0.30+(c.userData.wind/maxW)*5.0;
+      c.scale.y=Math.max(e,0.01);
+      c.position.y=(h/2+0.07)*e;
+    });
+    if(p<1) requestAnimationFrame(step);
+  })(performance.now());
+}
+
+/* ═══════════════════════════════════════════
+   3-D RENDER LOOP
+═══════════════════════════════════════════ */
+function loop3D(){
+  if(!G3.ready) return;
+  requestAnimationFrame(loop3D);
+  const t = performance.now()*0.001;
+
+  /* Animate ocean waves */
+  const pos = G3.oceanGeo.attributes.position;
+  for(let i=0;i<pos.count;i++){
+    const x=pos.getX(i), z=pos.getZ(i);
+    pos.setY(i,
+      Math.sin(x*0.40+t)*0.14 +
+      Math.cos(z*0.65+t*1.15)*0.10 +
+      Math.sin(x*0.85+z*0.58+t*0.72)*0.055
+    );
+  }
+  pos.needsUpdate=true;
+  G3.oceanGeo.computeVertexNormals();
+
+  /* Rotation */
+  if(!G3.isDragging) G3.autoAngle += 0.00060;
+  G3.worldGroup.rotation.y = G3.autoAngle + G3.dragDelta;
+
+  /* Pulse rings */
+  G3.pulseRings.forEach(pr=>{
+    const phase=((t*pr.speed)+pr.offset)%1;
+    pr.mesh.scale.setScalar(1+phase*pr.maxScale);
+    pr.mesh.material.opacity=(1-phase)*0.46;
+    pr.mesh.material.needsUpdate=true;
+  });
+
+  /* Smooth emissive glow on columns */
+  G3.colGroup.children.forEach(child=>{
+    if(child._emissiveTarget===undefined) return;
+    const mat=child.material;
+    if(!mat||mat.emissiveIntensity===undefined) return;
+    mat.emissiveIntensity += (child._emissiveTarget-mat.emissiveIntensity)*0.12;
+  });
+
+  /* Render */
+  G3.renderer.render(G3.scene, G3.camera);
+
+  /* Project labels */
+  projectLabels();
+}
+
+/* ── Project 3D city positions → CSS overlay ── */
+function projectLabels(){
+  if(!G3.worldGroup||!G3.camera||!G3.projVec) return;
+  const cvs=G3.renderer.domElement;
+  const W=cvs.clientWidth, H=cvs.clientHeight;
+  if(!W||!H) return;
+
+  labelMeta.forEach(lbl=>{
+    if(!lbl.el) return;
+    G3.projVec.set(lbl.x, lbl.y3d, lbl.z);
+    G3.worldGroup.localToWorld(G3.projVec);
+    G3.projVec.project(G3.camera);
+
+    const sx=Math.round((G3.projVec.x+1)/2*W);
+    const sy=Math.round((1-(G3.projVec.y+1)/2)*H);
+
+    /* Hide if behind camera or outside viewport */
+    if(G3.projVec.z>1||sx<4||sx>W-4||sy<12||sy>H-24){
+      lbl.el.style.display='none';
+    } else {
+      lbl.el.style.display='block';
+      lbl.el.style.left=sx+'px';
+      lbl.el.style.top =sy+'px';
+    }
+  });
+}
+
+/* ═══════════════════════════════════════════
+   3-D EVENTS (drag + hover tooltip)
+═══════════════════════════════════════════ */
+function attachEvents(canvas, card){
+  const tooltip = document.getElementById('og-3d-tooltip');
+  const ray     = new THREE.Raycaster();
+  const mNDC    = new THREE.Vector2();
+
+  function getHit(cx, cy){
+    if(!G3.ready||!G3.colGroup) return null;
+    const rect=canvas.getBoundingClientRect();
+    mNDC.set(((cx-rect.left)/rect.width)*2-1, -((cy-rect.top)/rect.height)*2+1);
+    ray.setFromCamera(mNDC, G3.camera);
+    return ray.intersectObjects(G3.colGroup.children,false)
+              .find(h=>h.object.userData?.city)||null;
+  }
+
+  function showTooltip(e, hit){
+    const d=hit.object.userData;
+    const rect=canvas.getBoundingClientRect();
+    const lx=e.clientX-rect.left, ly=e.clientY-rect.top;
+    const tipW=166;
+    tooltip.style.left = (lx+16+tipW>rect.width ? lx-tipW-10 : lx+14)+'px';
+    tooltip.style.top  = Math.max(8,ly-58)+'px';
+    document.getElementById('tt-city').textContent = d.city;
+    document.getElementById('tt-wind').textContent = d.wind?.toFixed(1)+' km/h';
+    document.getElementById('tt-temp').textContent = d.temp?.toFixed(1)+'°C';
+    document.getElementById('tt-rain').textContent = (d.rain||0)+' mm';
+    const rEl=document.getElementById('tt-risk');
+    rEl.textContent=d.risk;
+    rEl.style.color=RISK_CSS[d.risk]||RISK_CSS.NORMAL;
+    tooltip.style.display='block';
+  }
+  function hideTooltip(){ tooltip.style.display='none'; }
+
+  function setGlow(cityName, on){
+    G3.colGroup.children.forEach(child=>{
+      if(!child.userData?.city||child.userData.city!==cityName) return;
+      const base=child.userData.baseEmit||0.18;
+      child._emissiveTarget = on ? Math.min(base*2.8,0.95) : base;
+    });
+  }
+
+  /* Mouse drag */
+  canvas.addEventListener('mousedown',e=>{
+    G3.isDragging=true; G3.lastMouseX=e.clientX;
+    canvas.style.cursor='grabbing';
+  });
+  window.addEventListener('mousemove',e=>{
+    if(G3.isDragging){
+      G3.dragDelta+=(e.clientX-G3.lastMouseX)*0.0038;
+      G3.lastMouseX=e.clientX;
+      hideTooltip(); return;
+    }
+    const hit=getHit(e.clientX,e.clientY);
+    if(hit){
+      const city=hit.object.userData.city;
+      if(city!==G3.hoveredCity){
+        if(G3.hoveredCity) setGlow(G3.hoveredCity,false);
+        setGlow(city,true); G3.hoveredCity=city;
+      }
+      showTooltip(e,hit);
+      canvas.style.cursor='pointer';
+    } else {
+      if(G3.hoveredCity){ setGlow(G3.hoveredCity,false); G3.hoveredCity=null; }
+      hideTooltip();
+      canvas.style.cursor='grab';
+    }
+  });
+  window.addEventListener('mouseup',()=>{ G3.isDragging=false; canvas.style.cursor='grab'; });
+  canvas.addEventListener('mouseleave',()=>{ hideTooltip(); if(G3.hoveredCity){setGlow(G3.hoveredCity,false);G3.hoveredCity=null;} });
+
+  /* Touch drag */
+  canvas.addEventListener('touchstart',e=>{
+    G3.isDragging=true; G3.lastMouseX=e.touches[0].clientX;
+  },{passive:true});
+  canvas.addEventListener('touchmove',e=>{
+    if(!G3.isDragging) return;
+    G3.dragDelta+=(e.touches[0].clientX-G3.lastMouseX)*0.0038;
+    G3.lastMouseX=e.touches[0].clientX;
+  },{passive:true});
+  canvas.addEventListener('touchend',()=>{ G3.isDragging=false; });
+}
+
+/* ═══════════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════════ */
 function isCity(n){return n&&typeof n==="string"&&!/^\d{4}-\d{2}-\d{2}/.test(n)&&n.length>=2&&n.length<=30;}
 function badge(r){const c={NORMAL:"badge-normal",WATCH:"badge-watch",WARNING:"badge-warning",EMERGENCY:"badge-emergency"};return `<span class="tier-badge ${c[r]||'badge-normal'}">${r}</span>`;}
 
-/* ── TREND MODAL ── */
+/* ═══════════════════════════════════════════
+   TREND MODAL
+═══════════════════════════════════════════ */
 function openModal(){document.getElementById("modal-overlay").classList.add("open");document.body.style.overflow="hidden";if(sel)renderTrend(sel);}
 function closeModal(){document.getElementById("modal-overlay").classList.remove("open");document.body.style.overflow="";}
-document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal();});
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeModal(); });
 
-let hist={},sel=null;
+let hist={}, sel=null;
 
 function renderTrend(city){
-  const d=hist[city];if(!d||!d.length)return;
-  sel=city;const th=TH[city]||12;
+  const d=hist[city]; if(!d||!d.length) return;
+  sel=city; const th=TH[city]||12;
   document.querySelectorAll(".city-btn").forEach(b=>b.classList.toggle("active",b.dataset.city===city));
   const W=760,H=220,pL=36,pR=18,pT=14,pB=26,cW=W-pL-pR,cH=H-pT-pB;
-  const ws=d.map(x=>x.w),mx=Math.max(...ws,th*1.4);
+  const ws=d.map(x=>x.w), mx=Math.max(...ws,th*1.4);
   const xp=i=>pL+(i/Math.max(d.length-1,1))*cW;
   const yp=v=>pT+cH-(v/mx)*cH;
   let gH="",yH="";
@@ -267,7 +864,7 @@ function renderTrend(city){
   document.getElementById("line-path").setAttribute("d","M"+pts.join("L"));
   document.getElementById("area-path").setAttribute("d",`M${pL},${pT+cH} L${pts.join("L")} L${xp(d.length-1)},${pT+cH} Z`);
   document.getElementById("data-points").innerHTML=d.map((x,i)=>{const c=x.w>=th?"#f0a500":"#00c8b4";const g=x.w>=th?"rgba(240,165,0,0.25)":"rgba(0,200,180,0.25)";return `<circle cx="${xp(i).toFixed(1)}" cy="${yp(x.w).toFixed(1)}" r="8" fill="${g}"/><circle cx="${xp(i).toFixed(1)}" cy="${yp(x.w).toFixed(1)}" r="4" fill="${c}"/>`;}).join("");
-  const ty=yp(th);const tl=document.getElementById("threshold-line");
+  const ty=yp(th); const tl=document.getElementById("threshold-line");
   tl.setAttribute("x1",pL);tl.setAttribute("x2",W-pR);tl.setAttribute("y1",ty);tl.setAttribute("y2",ty);
   const avg=ws.reduce((a,b)=>a+b,0)/ws.length;
   const tr=ws.length>1?(ws[ws.length-1]>ws[0]?"↑ Rising":"↓ Easing"):"—";
@@ -275,15 +872,16 @@ function renderTrend(city){
   document.getElementById("trend-sum").textContent=`Avg ${avg.toFixed(1)} km/h · ${tr} · ${ad} alert day${ad!==1?"s":""}`;
 }
 
-/* ── PREDICTIVE ALERTS ── */
+/* ═══════════════════════════════════════════
+   PREDICTIVE ALERTS
+═══════════════════════════════════════════ */
 async function loadPredictions(){
   try{
-    const now=new Date(),in24=new Date(now.getTime()+86400000);
+    const now=new Date(), in24=new Date(now.getTime()+86400000);
     const res=await Promise.all(CITIES.map(async c=>{
       try{
         const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${c.lat}&longitude=${c.lon}&hourly=wind_speed_10m&forecast_days=2&timezone=Asia%2FKolkata`);
-        const d=await r.json();
-        let fc=null;
+        const d=await r.json(); let fc=null;
         for(let i=0;i<d.hourly.time.length;i++){
           const t=new Date(d.hourly.time[i]);
           if(t>now&&t<=in24&&d.hourly.wind_speed_10m[i]>=c.threshold){fc={t,w:d.hourly.wind_speed_10m[i],h:Math.round((t-now)/3600000)};break;}
@@ -300,147 +898,139 @@ async function loadPredictions(){
     el.innerHTML=`<div class="pred-grid">${pred.map((r,i)=>{
       const when=r.fc.h===0?"Within the hour":`In ~${r.fc.h}h`;
       const ts=r.fc.t.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit",hour12:true});
-      return `<div class="pred-card" style="animation-delay:${i*60}ms">
-        <div class="pred-city">${r.city}</div>
-        <div class="pred-meta">Forecast <span>${r.fc.w.toFixed(1)} km/h</span> · Threshold <span>${r.threshold} km/h</span></div>
-        <div class="pred-when">⚡ ${when} · ${ts}</div>
-      </div>`;
+      return `<div class="pred-card" style="animation-delay:${i*60}ms"><div class="pred-city">${r.city}</div><div class="pred-meta">Forecast <span>${r.fc.w.toFixed(1)} km/h</span> · Threshold <span>${r.threshold} km/h</span></div><div class="pred-when">⚡ ${when} · ${ts}</div></div>`;
     }).join("")}</div>`;
   }catch{
     document.getElementById("pred-container").innerHTML=`<div class="no-alerts" style="color:var(--tm)">Forecast data unavailable</div>`;
   }
 }
 
-/* ── AI BRIEFING ── */
+/* ═══════════════════════════════════════════
+   AI BRIEFING
+═══════════════════════════════════════════ */
 async function loadBriefing(){
   try{
-    const r=await fetch(BRIEF_URL);const t=await r.text();
+    const r=await fetch(BRIEF_URL); const t=await r.text();
     const j=JSON.parse(t.match(/google\.visualization\.Query\.setResponse\(([\s\S]*?)\);/)[1]);
-    const rows=j.table.rows;if(!rows||!rows.length)throw 0;
+    const rows=j.table.rows; if(!rows||!rows.length) throw 0;
     const last=rows[rows.length-1].c;
-    const txt=last[1]?.v||"";const ts=last[0]?.v||"";
-    if(!txt)throw 0;
+    const txt=last[1]?.v||""; const ts=last[0]?.v||"";
+    if(!txt) throw 0;
     const tsStr=ts?new Date(ts).toLocaleString("en-IN",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):"—";
     document.getElementById("briefing-time").textContent=tsStr;
     const el=document.getElementById("briefing-content");
     el.className="briefing-text";
     el.innerHTML=txt.replace(/^.*?Intelligence Briefing.*?\n/i,"").replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>").replace(/\n/g,"<br>");
   }catch{
-    const el=document.getElementById("briefing-content");
-    el.className="briefing-text";
-    el.innerHTML=`<span style="color:var(--tm)">AI briefing will appear here after the next n8n briefing run.</span>`;
+    document.getElementById("briefing-content").className="briefing-text";
+    document.getElementById("briefing-content").innerHTML=`<span style="color:var(--tm)">AI briefing will appear here after the next n8n briefing run.</span>`;
   }
 }
 
-/* ── MAIN DATA ── */
+/* ═══════════════════════════════════════════
+   MAIN DATA LOAD
+═══════════════════════════════════════════ */
 async function loadData(){
   try{
-    const r=await fetch(DATA_URL);const t=await r.text();
+    const r=await fetch(DATA_URL); const t=await r.text();
     const j=JSON.parse(t.match(/google\.visualization\.Query\.setResponse\(([\s\S]*?)\);/)[1]);
     const rows=j.table.rows;
-    const cm={};const hm={};
-    const cut=new Date();cut.setDate(cut.getDate()-7);
-    rows.forEach(row=>{
-      const c=row.c;if(!c||!c[1]?.v)return;
-      const city=String(c[1].v).trim();if(!isCity(city))return;
-      const wind=parseFloat(c[2]?.v)||0,temp=parseFloat(c[3]?.v)||0,rain=parseFloat(c[4]?.v)||0;
-      const risk=(c[5]?.v||"NORMAL").toUpperCase(),ts=c[7]?.v||"";
-      cm[city]={city,wind,temp,rain,risk,ts};
-      if(ts){const d=new Date(ts);if(d>=cut){const ds=ts.slice(0,10);if(!hm[city])hm[city]={};if(!hm[city][ds])hm[city][ds]=[];hm[city][ds].push(wind);}}
-    });
-    hist={};
-    Object.keys(hm).forEach(city=>{hist[city]=Object.keys(hm[city]).sort().map(date=>({date,w:hm[city][date].reduce((a,b)=>a+b,0)/hm[city][date].length}));});
-    const cities=Object.values(cm);
-    const alerts=cities.filter(c=>c.risk!=="NORMAL").sort((a,b)=>TIER[b.risk]-TIER[a.risk]||b.wind-a.wind);
-    const sorted=[...cities].sort((a,b)=>b.wind-a.wind);
-    const mw=Math.max(...cities.map(c=>c.wind),1);
-    const hr=alerts.length?alerts[0].risk:"NORMAL";
-    const lat=cities.map(c=>c.ts).filter(Boolean).sort().reverse()[0]||"";
-    const ts=lat?new Date(lat).toLocaleString("en-IN",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):"recently";
-    const rc={NORMAL:"green",WATCH:"amber",WARNING:"amber",EMERGENCY:"red"};
+    const cm={}, hm={};
+    const cut=new Date(); cut.setDate(cut.getDate()-7);
 
+    rows.forEach(row=>{
+      const c=row.c; if(!c||!c[1]?.v) return;
+      const city=String(c[1].v).trim(); if(!isCity(city)) return;
+      const wind=parseFloat(c[2]?.v)||0, temp=parseFloat(c[3]?.v)||0, rain=parseFloat(c[4]?.v)||0;
+      const risk=(c[5]?.v||"NORMAL").toUpperCase(), ts=c[7]?.v||"";
+      cm[city]={city,wind,temp,rain,risk,ts};
+      if(ts){
+        const d=new Date(ts);
+        if(d>=cut){
+          const ds=ts.slice(0,10);
+          if(!hm[city]) hm[city]={};
+          if(!hm[city][ds]) hm[city][ds]=[];
+          hm[city][ds].push(wind);
+        }
+      }
+    });
+
+    hist={};
+    Object.keys(hm).forEach(city=>{
+      hist[city]=Object.keys(hm[city]).sort().map(date=>({date,w:hm[city][date].reduce((a,b)=>a+b,0)/hm[city][date].length}));
+    });
+
+    const cities  = Object.values(cm);
+    const alerts  = cities.filter(c=>c.risk!=="NORMAL").sort((a,b)=>TIER[b.risk]-TIER[a.risk]||b.wind-a.wind);
+    const sorted  = [...cities].sort((a,b)=>b.wind-a.wind);
+    const mw      = Math.max(...cities.map(c=>c.wind),1);
+    const hr      = alerts.length?alerts[0].risk:"NORMAL";
+    const latTs   = cities.map(c=>c.ts).filter(Boolean).sort().reverse()[0]||"";
+    const tsLabel = latTs?new Date(latTs).toLocaleString("en-IN",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):"recently";
+    const rc      = {NORMAL:"green",WATCH:"amber",WARNING:"amber",EMERGENCY:"red"};
+
+    /* Metrics */
     document.getElementById("metrics-row").innerHTML=[
       {l:"Cities monitored",v:cities.length,c:"cyan"},
-      {l:"Active alerts",v:alerts.length,c:alerts.length?"amber":"green"},
-      {l:"Highest risk",v:hr,c:rc[hr]},
+      {l:"Active alerts",   v:alerts.length,c:alerts.length?"amber":"green"},
+      {l:"Highest risk",    v:hr,           c:rc[hr]},
       {l:"All-clear cities",v:cities.length-alerts.length,c:"green"}
     ].map(m=>`<div class="metric"><div class="metric-label">${m.l}</div><div class="metric-value ${m.c}">${m.v}</div><div class="metric-sub">of 9 total</div></div>`).join("");
 
+    /* ── UPDATE 3D MAP ── */
+    update3D(cities);
+
+    /* Alerts panel */
     const ae=document.getElementById("alerts-container");
     if(!alerts.length){
       ae.innerHTML=`<div class="no-alerts"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>All 9 coastal cities currently clear</div>`;
     }else{
-      ae.innerHTML=`<div class="alerts-grid">${alerts.map((a,i)=>{const cl={WATCH:"watch",WARNING:"warning",EMERGENCY:"emergency"}[a.risk]||"watch";return `<div class="alert-card ${cl}" style="animation-delay:${i*60}ms"><div><div class="alert-city">${a.city}</div><div class="alert-meta">Wind <span>${a.wind.toFixed(1)} km/h</span> · Temp <span>${a.temp.toFixed(1)}°C</span><br>Rain <span>${a.rain} mm</span></div></div>${badge(a.risk)}</div>`;}).join("")}</div>`;
+      ae.innerHTML=`<div class="alerts-grid">${alerts.map((a,i)=>{
+        const cl={WATCH:"watch",WARNING:"warning",EMERGENCY:"emergency"}[a.risk]||"watch";
+        return `<div class="alert-card ${cl}" style="animation-delay:${i*60}ms"><div><div class="alert-city">${a.city}</div><div class="alert-meta">Wind <span>${a.wind.toFixed(1)} km/h</span> · Temp <span>${a.temp.toFixed(1)}°C</span><br>Rain <span>${a.rain} mm</span></div></div>${badge(a.risk)}</div>`;
+      }).join("")}</div>`;
     }
 
+    /* Trend modal city buttons */
     const tc=sorted.map(c=>c.city).filter(c=>hist[c]&&hist[c].length);
-    document.getElementById("city-selector").innerHTML=tc.map(city=>`<button class="city-btn" data-city="${city}" onclick="renderTrend('${city}')">${city}</button>`).join("");
-    if(!sel||!hist[sel])sel=tc[0];
+    document.getElementById("city-selector").innerHTML=tc.map(city=>
+      `<button class="city-btn" data-city="${city}" onclick="renderTrend('${city}')">${city}</button>`).join("");
+    if(!sel||!hist[sel]) sel=tc[0];
 
-    document.getElementById("city-table").innerHTML=sorted.map(c=>`<tr><td>${c.city}</td><td>${c.wind.toFixed(1)}</td><td>${c.temp.toFixed(1)}°</td><td>${c.rain}</td><td>${badge(c.risk)}</td><td class="${c.risk==="NORMAL"?"sc":"sa"}">${c.risk==="NORMAL"?"Clear":"Alert"}</td></tr>`).join("");
+    /* City table */
+    document.getElementById("city-table").innerHTML=sorted.map(c=>
+      `<tr><td>${c.city}</td><td>${c.wind.toFixed(1)}</td><td>${c.temp.toFixed(1)}°</td><td>${c.rain}</td><td>${badge(c.risk)}</td><td class="${c.risk==="NORMAL"?"sc":"sa"}">${c.risk==="NORMAL"?"Clear":"Alert"}</td></tr>`
+    ).join("");
 
-    document.getElementById("bar-chart").innerHTML=sorted.map(c=>{const pct=Math.round((c.wind/mw)*100);const col=BAR_CLR[c.risk]||BAR_CLR.NORMAL;const nm=c.city.length>11?c.city.slice(0,10)+"…":c.city;return `<div class="bar-row"><span class="bar-city">${nm}</span><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${col};color:${col}"></div></div><span class="bar-val">${c.wind.toFixed(1)}</span></div>`;}).join("");
+    /* Bar chart */
+    document.getElementById("bar-chart").innerHTML=sorted.map(c=>{
+      const pct=Math.round((c.wind/mw)*100);
+      const col=BAR_CLR[c.risk]||BAR_CLR.NORMAL;
+      const nm=c.city.length>11?c.city.slice(0,10)+"…":c.city;
+      return `<div class="bar-row"><span class="bar-city">${nm}</span><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${col};color:${col}"></div></div><span class="bar-val">${c.wind.toFixed(1)}</span></div>`;
+    }).join("");
 
-    const ots=document.getElementById("og-timestamp");if(ots)ots.textContent=`Updated ${ts}`;
+    /* Timestamp */
+    const ots=document.getElementById("og-timestamp");
+    if(ots) ots.textContent=`Updated ${tsLabel}`;
+
     document.getElementById("og-loading").style.display="none";
     document.getElementById("og-dashboard").style.display="block";
+
   }catch(e){
     console.error(e);
     document.getElementById("og-loading").innerHTML=`<p style="color:var(--red);font-family:var(--fm);font-size:13px">Could not load data. Ensure Google Sheet is publicly shared.</p>`;
   }
 }
 
-/* ── RAG QUERY ── */
-function askQuestion(q){
-  document.getElementById("rag-input").value=q;
-  submitQuery();
-}
-
-async function submitQuery(){
-  const input=document.getElementById("rag-input");
-  const q=input.value.trim();
-  if(!q)return;
-  const btn=document.getElementById("rag-btn");
-  const answerEl=document.getElementById("rag-answer");
-  const textEl=document.getElementById("rag-answer-text");
-  const qEl=document.getElementById("rag-answer-q");
-  const metaEl=document.getElementById("rag-answer-meta");
-
-  btn.disabled=true;
-  btn.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Thinking...`;
-  answerEl.style.display="block";
-  textEl.className="rag-thinking";
-  textEl.innerHTML=`<div class="b-dot"></div><div class="b-dot"></div><div class="b-dot"></div><span style="margin-left:6px">Retrieving data and generating answer...</span>`;
-  qEl.textContent=`"${q}"`;
-  metaEl.textContent="";
-
-  try{
-    const res=await fetch(WEBHOOK_URL,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({question:q})
-    });
-    const data=await res.json();
-    const answer=data.answer||"Sorry, I couldn't generate an answer from the available data.";
-    const cities=data.citiesAnalysed?.join(", ")||"all cities";
-    const rowCount=data.rowCount||0;
-    textEl.className="rag-answer-text";
-    textEl.innerHTML=answer.replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>").replace(/\n/g,"<br>");
-    metaEl.textContent=`${rowCount} readings analysed · ${cities}`;
-  }catch(e){
-    textEl.className="rag-answer-text";
-    textEl.innerHTML=`<span style="color:var(--red)">Could not reach the query service. Ensure the OceanGuard_RAG workflow is active in n8n.</span>`;
-  }
-
-  btn.disabled=false;
-  btn.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Ask`;
-}
-
-/* ── INIT ── */
+/* ═══════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════ */
+init3D();
 loadData();
 loadPredictions();
 loadBriefing();
-setInterval(loadData,60000);
+setInterval(loadData,       60000);
 setInterval(loadPredictions,300000);
 </script>
 </body>
