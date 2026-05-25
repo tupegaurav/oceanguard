@@ -206,7 +206,7 @@
 </div>
 
 <footer class="og-footer">
-  Data · <span>Open-Meteo</span> &nbsp;|&nbsp; Pipeline · <span>n8n</span> &nbsp;|&nbsp; AI · <span>Groq / Llama 3</span> &nbsp;|&nbsp; Built by <span>OceanGuard</span><br>
+  Data · <span>Open-Meteo</span> &nbsp;|&nbsp; AI · <span>Groq / Llama 3.1</span> &nbsp;|&nbsp; Built by <span>OceanGuard</span><br>
   Refreshes every 60 seconds · Monitoring India's 7,500 km coastline
   <div class="og-footer-links">
     <a href="analytics.html">Analytics</a>
@@ -220,8 +220,8 @@
 /* ── CONFIG ── */
 const SHEET       = "1LHddh6bg9M0hskAypVRr_iF5h4SLzM1yw1vuFetn51s";
 const DATA_URL    = `https://docs.google.com/spreadsheets/d/${SHEET}/gviz/tq?tqx=out:json&sheet=Sheet1`;
-const BRIEF_URL   = `https://docs.google.com/spreadsheets/d/${SHEET}/gviz/tq?tqx=out:json&sheet=Briefings`;
-const WEBHOOK_URL = "https://gauravtupe1006.app.n8n.cloud/webhook/oceanguard-query";
+const GROQ_KEY    = "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";
+const GROQ_URL    = "https://api.groq.com/openai/v1/chat/completions";
 
 const TIER    = {NORMAL:0,WATCH:1,WARNING:2,EMERGENCY:3};
 const BAR_CLR = {NORMAL:"#00d98b",WATCH:"#00c8b4",WARNING:"#f0a500",EMERGENCY:"#f04060"};
@@ -247,7 +247,7 @@ function openModal(){document.getElementById("modal-overlay").classList.add("ope
 function closeModal(){document.getElementById("modal-overlay").classList.remove("open");document.body.style.overflow="";}
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal();});
 
-let hist={},sel=null;
+let hist={},sel=null,globalCities=[],briefingLoaded=false;
 
 function renderTrend(city){
   const d=hist[city];if(!d||!d.length)return;
@@ -311,24 +311,37 @@ async function loadPredictions(){
   }
 }
 
-/* ── AI BRIEFING ── */
+/* ── AI BRIEFING — direct Groq call, no n8n needed ── */
 async function loadBriefing(){
   try{
-    const r=await fetch(BRIEF_URL);const t=await r.text();
-    const j=JSON.parse(t.match(/google\.visualization\.Query\.setResponse\(([\s\S]*?)\);/)[1]);
-    const rows=j.table.rows;if(!rows||!rows.length)throw 0;
-    const last=rows[rows.length-1].c;
-    const txt=last[1]?.v||"";const ts=last[0]?.v||"";
-    if(!txt)throw 0;
-    const tsStr=ts?new Date(ts).toLocaleString("en-IN",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):"—";
-    document.getElementById("briefing-time").textContent=tsStr;
+    const context=globalCities.map(c=>
+      `${c.city}: wind ${c.wind.toFixed(1)} km/h, temp ${c.temp.toFixed(1)}°C, rain ${c.rain}mm, risk ${c.risk}`
+    ).join("\n");
+
+    const res=await fetch(GROQ_URL,{
+      method:"POST",
+      headers:{"Authorization":`Bearer ${GROQ_KEY}`,"Content-Type":"application/json"},
+      body:JSON.stringify({
+        model:"llama-3.1-8b-instant",
+        max_tokens:400,
+        temperature:0.4,
+        messages:[
+          {role:"system",content:"You are a coastal weather intelligence analyst for India. Write a concise 3-4 sentence briefing. Use **bold** for city names and key risk terms. No bullet points. Be direct and actionable. No title or heading — start immediately with the analysis."},
+          {role:"user",content:`Write a coastal intelligence briefing based on this live data:\n${context}\n\nFocus on which coasts are elevated, whether it is sustained or a spike, and what maritime operators should know. One paragraph only.`}
+        ]
+      })
+    });
+    const data=await res.json();
+    const text=data.choices[0].message.content||"";
+    briefingLoaded=true;
+    document.getElementById("briefing-time").textContent=new Date().toLocaleString("en-IN",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
     const el=document.getElementById("briefing-content");
     el.className="briefing-text";
-    el.innerHTML=txt.replace(/^.*?Intelligence Briefing.*?\n/i,"").replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>").replace(/\n/g,"<br>");
-  }catch{
+    el.innerHTML=text.trim().replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>").replace(/\n/g,"<br>");
+  }catch(e){
     const el=document.getElementById("briefing-content");
     el.className="briefing-text";
-    el.innerHTML=`<span style="color:var(--tm)">AI briefing will appear here after the next n8n briefing run.</span>`;
+    el.innerHTML=`<span style="color:var(--tm)">Could not generate briefing. Check your Groq API key.</span>`;
   }
 }
 
@@ -351,6 +364,8 @@ async function loadData(){
     hist={};
     Object.keys(hm).forEach(city=>{hist[city]=Object.keys(hm[city]).sort().map(date=>({date,w:hm[city][date].reduce((a,b)=>a+b,0)/hm[city][date].length}));});
     const cities=Object.values(cm);
+    globalCities=cities;
+    if(!briefingLoaded){loadBriefing();}
     const alerts=cities.filter(c=>c.risk!=="NORMAL").sort((a,b)=>TIER[b.risk]-TIER[a.risk]||b.wind-a.wind);
     const sorted=[...cities].sort((a,b)=>b.wind-a.wind);
     const mw=Math.max(...cities.map(c=>c.wind),1);
@@ -390,7 +405,7 @@ async function loadData(){
   }
 }
 
-/* ── RAG QUERY ── */
+/* ── RAG QUERY — direct Groq call, no n8n needed ── */
 function askQuestion(q){
   document.getElementById("rag-input").value=q;
   submitQuery();
@@ -415,21 +430,31 @@ async function submitQuery(){
   metaEl.textContent="";
 
   try{
-    const res=await fetch(WEBHOOK_URL,{
+    const context=globalCities.map(c=>
+      `${c.city}: wind ${c.wind.toFixed(1)} km/h, temp ${c.temp.toFixed(1)}°C, rain ${c.rain}mm, risk ${c.risk}`
+    ).join("\n");
+
+    const res=await fetch(GROQ_URL,{
       method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({question:q})
+      headers:{"Authorization":`Bearer ${GROQ_KEY}`,"Content-Type":"application/json"},
+      body:JSON.stringify({
+        model:"llama-3.1-8b-instant",
+        max_tokens:300,
+        temperature:0.3,
+        messages:[
+          {role:"system",content:"You are OceanGuard's coastal intelligence assistant for India's 9 coastal cities. Answer questions using only the data provided. Be concise, factual, direct. 2-3 sentences maximum. Never invent data."},
+          {role:"user",content:`Question: ${q}\n\nLive coastal data right now:\n${context}\n\nAnswer based only on this data:`}
+        ]
+      })
     });
     const data=await res.json();
-    const answer=data.answer||"Sorry, I couldn't generate an answer from the available data.";
-    const cities=data.citiesAnalysed?.join(", ")||"all cities";
-    const rowCount=data.rowCount||0;
+    const answer=data.choices[0].message.content||"Sorry, couldn't generate an answer from the available data.";
     textEl.className="rag-answer-text";
     textEl.innerHTML=answer.replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>").replace(/\n/g,"<br>");
-    metaEl.textContent=`${rowCount} readings analysed · ${cities}`;
+    metaEl.textContent=`${globalCities.length} cities analysed · live data · Groq / Llama 3.1`;
   }catch(e){
     textEl.className="rag-answer-text";
-    textEl.innerHTML=`<span style="color:var(--red)">Could not reach the query service. Ensure the OceanGuard_RAG workflow is active in n8n.</span>`;
+    textEl.innerHTML=`<span style="color:var(--red)">Could not reach Groq API. Check your API key in index.html.</span>`;
   }
 
   btn.disabled=false;
@@ -439,7 +464,6 @@ async function submitQuery(){
 /* ── INIT ── */
 loadData();
 loadPredictions();
-loadBriefing();
 setInterval(loadData,60000);
 setInterval(loadPredictions,300000);
 </script>
