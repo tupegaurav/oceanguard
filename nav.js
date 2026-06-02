@@ -107,7 +107,7 @@
 })();
 
 /* ── RAG CONFIG ── */
-var RAG_WEBHOOK = "https://gauravtupe.app.n8n.cloud/webhook/oceanguard-query";
+var RAG_WEBHOOK = "http://localhost:5678/webhook/oceanguard-query";
 
 /* ── MODAL CONTROLS ── */
 function openRagModal(){
