@@ -220,8 +220,11 @@
 /* ── CONFIG ── */
 const SHEET       = "1LHddh6bg9M0hskAypVRr_iF5h4SLzM1yw1vuFetn51s";
 const DATA_URL    = `https://docs.google.com/spreadsheets/d/${SHEET}/gviz/tq?tqx=out:json&sheet=Sheet1`;
-const GROQ_KEY    = "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";
-const GROQ_URL    = "https://api.groq.com/openai/v1/chat/completions";
+/* n8n Cloud webhook URLs — replace with your production URLs after activating each workflow.
+   No API keys live in this file anymore; Groq calls happen server-side in n8n. */
+const N8N_BASE         = "https://YOUR-INSTANCE.app.n8n.cloud/webhook";
+const BRIEFING_URL     = `${N8N_BASE}/oceanguard-briefing`;
+const RAG_URL          = `${N8N_BASE}/oceanguard-query`;
 
 const TIER    = {NORMAL:0,WATCH:1,WARNING:2,EMERGENCY:3};
 const BAR_CLR = {NORMAL:"#00d98b",WATCH:"#00c8b4",WARNING:"#f0a500",EMERGENCY:"#f04060"};
@@ -311,37 +314,22 @@ async function loadPredictions(){
   }
 }
 
-/* ── AI BRIEFING — direct Groq call, no n8n needed ── */
+/* ── AI BRIEFING — fetched from n8n webhook (Groq key stays server-side) ── */
 async function loadBriefing(){
   try{
-    const context=globalCities.map(c=>
-      `${c.city}: wind ${c.wind.toFixed(1)} km/h, temp ${c.temp.toFixed(1)}°C, rain ${c.rain}mm, risk ${c.risk}`
-    ).join("\n");
-
-    const res=await fetch(GROQ_URL,{
-      method:"POST",
-      headers:{"Authorization":`Bearer ${GROQ_KEY}`,"Content-Type":"application/json"},
-      body:JSON.stringify({
-        model:"llama-3.1-8b-instant",
-        max_tokens:400,
-        temperature:0.4,
-        messages:[
-          {role:"system",content:"You are a coastal weather intelligence analyst for India. Write a concise 3-4 sentence briefing. Use **bold** for city names and key risk terms. No bullet points. Be direct and actionable. No title or heading — start immediately with the analysis."},
-          {role:"user",content:`Write a coastal intelligence briefing based on this live data:\n${context}\n\nFocus on which coasts are elevated, whether it is sustained or a spike, and what maritime operators should know. One paragraph only.`}
-        ]
-      })
-    });
+    const res=await fetch(BRIEFING_URL,{method:"GET"});
     const data=await res.json();
-    const text=data.choices[0].message.content||"";
+    const text=data.briefing||"";
     briefingLoaded=true;
-    document.getElementById("briefing-time").textContent=new Date().toLocaleString("en-IN",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
+    const ts=data.timestamp?new Date(data.timestamp):new Date();
+    document.getElementById("briefing-time").textContent=ts.toLocaleString("en-IN",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
     const el=document.getElementById("briefing-content");
     el.className="briefing-text";
     el.innerHTML=text.trim().replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>").replace(/\n/g,"<br>");
   }catch(e){
     const el=document.getElementById("briefing-content");
     el.className="briefing-text";
-    el.innerHTML=`<span style="color:var(--tm)">Could not generate briefing. Check your Groq API key.</span>`;
+    el.innerHTML=`<span style="color:var(--tm)">Could not load briefing. Check the n8n webhook is active.</span>`;
   }
 }
 
@@ -430,31 +418,20 @@ async function submitQuery(){
   metaEl.textContent="";
 
   try{
-    const context=globalCities.map(c=>
-      `${c.city}: wind ${c.wind.toFixed(1)} km/h, temp ${c.temp.toFixed(1)}°C, rain ${c.rain}mm, risk ${c.risk}`
-    ).join("\n");
-
-    const res=await fetch(GROQ_URL,{
+    const res=await fetch(RAG_URL,{
       method:"POST",
-      headers:{"Authorization":`Bearer ${GROQ_KEY}`,"Content-Type":"application/json"},
-      body:JSON.stringify({
-        model:"llama-3.1-8b-instant",
-        max_tokens:300,
-        temperature:0.3,
-        messages:[
-          {role:"system",content:"You are OceanGuard's coastal intelligence assistant for India's 9 coastal cities. Answer questions using only the data provided. Be concise, factual, direct. 2-3 sentences maximum. Never invent data."},
-          {role:"user",content:`Question: ${q}\n\nLive coastal data right now:\n${context}\n\nAnswer based only on this data:`}
-        ]
-      })
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({question:q})
     });
     const data=await res.json();
-    const answer=data.choices[0].message.content||"Sorry, couldn't generate an answer from the available data.";
+    const answer=data.answer||"Sorry, couldn't generate an answer from the available data.";
     textEl.className="rag-answer-text";
     textEl.innerHTML=answer.replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>").replace(/\n/g,"<br>");
-    metaEl.textContent=`${globalCities.length} cities analysed · live data · Groq / Llama 3.1`;
+    const rowCount=data.rowCount!=null?`${data.rowCount} readings analysed`:`${globalCities.length} cities analysed`;
+    metaEl.textContent=`${rowCount} · Groq / Llama 3.1`;
   }catch(e){
     textEl.className="rag-answer-text";
-    textEl.innerHTML=`<span style="color:var(--red)">Could not reach Groq API. Check your API key in index.html.</span>`;
+    textEl.innerHTML=`<span style="color:var(--red)">Could not reach the assistant. Check the n8n webhook is active.</span>`;
   }
 
   btn.disabled=false;
