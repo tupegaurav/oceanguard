@@ -222,9 +222,11 @@ const SHEET       = "1LHddh6bg9M0hskAypVRr_iF5h4SLzM1yw1vuFetn51s";
 const DATA_URL    = `https://docs.google.com/spreadsheets/d/${SHEET}/gviz/tq?tqx=out:json&sheet=Sheet1`;
 /* n8n Cloud  URLs — replace with your production URLs after activating each workflow.
    No API keys live in this file anymore; Groq calls happen server-side in n8n. */
-const N8N_BASE         = "https://urjasagar.app.n8n.cloud/webhook";
-const BRIEFING_URL     = `${N8N_BASE}/oceanguard-briefing`;
-const RAG_URL          = `${N8N_BASE}/oceanguard-query`;
+const N8N_BASE = "https://urjasagar.app.n8n.cloud/webhook";
+
+const BRIEFING_URL = `${N8N_BASE}/oceanguard-briefing`;
+
+const RAG_URL = "https://urjasagar.app.n8n.cloud/webhook/oceanguard-query";
 
 const TIER    = {NORMAL:0,WATCH:1,WARNING:2,EMERGENCY:3};
 const BAR_CLR = {NORMAL:"#00d98b",WATCH:"#00c8b4",WARNING:"#f0a500",EMERGENCY:"#f04060"};
