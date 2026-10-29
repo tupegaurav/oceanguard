@@ -55,7 +55,7 @@
             <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
           </svg>
           Ask OceanGuard
-          <span class="og-rag-badge" style="margin-left:4px">RAG · Llama 3</span>
+          <span class="og-rag-badge" style="margin-left:4px">RAG · GPT-OSS</span>
         </div>
         <button class="og-rag-close" onclick="closeRagModal()">&#x2715;</button>
       </div>
@@ -107,7 +107,7 @@
 })();
 
 /* ── RAG CONFIG ── */
-var RAG_WEBHOOK = "https://gauravpm.app.n8n.cloud/webhook/oceanguard-query";
+var RAG_WEBHOOK = "https://urjasagar.app.n8n.cloud/webhook/oceanguard-query";
 
 /* ── MODAL CONTROLS ── */
 function openRagModal(){
