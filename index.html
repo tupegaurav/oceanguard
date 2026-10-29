@@ -206,7 +206,7 @@
 </div>
 
 <footer class="og-footer">
-  Data · <span>Open-Meteo</span> &nbsp;|&nbsp; AI · <span>Groq / Llama 3.1</span> &nbsp;|&nbsp; Built by <span>OceanGuard</span><br>
+  Data · <span>Open-Meteo</span> &nbsp;|&nbsp; AI · <span>Groq / GPT-OSS 20B</span> &nbsp;|&nbsp; Built by <span>OceanGuard</span><br>
   Refreshes every 60 seconds · Monitoring India's 7,500 km coastline
   <div class="og-footer-links">
     <a href="analytics.html">Analytics</a>
@@ -395,7 +395,7 @@ async function loadData(){
   }
 }
 
-/* ── RAG QUERY — direct Groq call, no n8n needed ── */
+/* ── RAG QUERY — via n8n webhook (OceanGuard_RAG) ── */
 function askQuestion(q){
   document.getElementById("rag-input").value=q;
   submitQuery();
@@ -430,7 +430,7 @@ async function submitQuery(){
     textEl.className="rag-answer-text";
     textEl.innerHTML=answer.replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>").replace(/\n/g,"<br>");
     const rowCount=data.rowCount!=null?`${data.rowCount} readings analysed`:`${globalCities.length} cities analysed`;
-    metaEl.textContent=`${rowCount} · Groq / Llama 3.1`;
+    metaEl.textContent=`${rowCount} · Groq / GPT-OSS 20B`;
   }catch(e){
     textEl.className="rag-answer-text";
     textEl.innerHTML=`<span style="color:var(--red)">Could not reach the assistant. Check the n8n webhook is active.</span>`;
