@@ -60,6 +60,19 @@
 .bar-fill::after{content:'';position:absolute;right:0;top:50%;transform:translateY(-50%);width:8px;height:8px;border-radius:50%;background:inherit;box-shadow:0 0 6px currentColor;}
 .bar-val{font-family:var(--fm);font-size:11px;color:var(--tm);width:34px;text-align:right;flex-shrink:0;}
 
+/* ── RAIN OUTLOOK ── */
+.rain-legend{display:flex;gap:14px;flex-wrap:wrap;padding:.9rem 1.5rem 0;font-family:var(--fm);font-size:10px;color:var(--tm);letter-spacing:.04em;}
+.rain-legend i{display:inline-block;width:14px;height:5px;border-radius:3px;margin-right:6px;vertical-align:middle;}
+.rain-row{display:grid;grid-template-columns:96px 1fr 250px;gap:12px;align-items:center;margin-bottom:12px;}
+.rain-bars{display:flex;flex-direction:column;gap:4px;}
+.rain-fill{height:100%;border-radius:3px;transition:width .8s cubic-bezier(.4,0,.2,1);min-width:2px;}
+.rain-fill.past{background:#5aa9ff;}.rain-fill.next{background:var(--cyan);}
+.rain-meta{font-family:var(--fm);font-size:11px;color:var(--ts);display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.rain-meta b{color:var(--tx);font-weight:500;}
+.rain-chip{font-family:var(--fm);font-size:9px;letter-spacing:.06em;padding:2px 7px;border-radius:10px;border:1px solid currentColor;white-space:nowrap;}
+.rain-empty{font-family:var(--fm);font-size:12px;color:var(--tm);padding:1.25rem 1.5rem;}
+@media(max-width:900px){.rain-row{grid-template-columns:88px 1fr;}.rain-meta{grid-column:1/-1;}}
+
 /* ── RAG QUERY BOX ── */
 .rag-card{background:var(--panel);border:1px solid rgba(167,139,250,0.2);border-radius:14px;padding:1.5rem;margin-bottom:1.75rem;position:relative;overflow:hidden;}
 .rag-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(167,139,250,0.5),var(--cyan-m),transparent);}
@@ -154,12 +167,19 @@
     <div class="og-sec">Current alerts</div>
     <div id="alerts-container"></div>
 
+    <!-- RAIN OUTLOOK -->
+    <div class="og-sec">Rain outlook — last 24h &amp; next 24h</div>
+    <div class="og-card" style="margin-bottom:1.75rem">
+      <div class="rain-legend"><span><i style="background:#5aa9ff"></i>Last 24h (mm)</span><span><i style="background:var(--cyan)"></i>Forecast next 24h (mm)</span><span>⚡ thunderstorm risk</span></div>
+      <div id="rain-chart" style="padding:1.1rem 1.5rem 0.4rem"></div>
+    </div>
+
     <!-- CITY TABLE + BAR CHART -->
     <div class="two-col">
       <div class="og-card">
         <div class="og-card-header"><div class="og-sec" style="margin-bottom:0">City status</div></div>
         <table class="og-table">
-          <thead><tr><th>City</th><th>Wind</th><th>Temp</th><th>Rain</th><th>Risk</th><th>Status</th></tr></thead>
+          <thead><tr><th>City</th><th>Wind</th><th>Temp</th><th>Rain 24h</th><th>Risk</th><th>Status</th></tr></thead>
           <tbody id="city-table"></tbody>
         </table>
       </div>
@@ -336,6 +356,35 @@ async function loadBriefing(){
 }
 
 /* ── MAIN DATA ── */
+/* ── RAIN HELPERS ── */
+const RAIN_CLR={"DRY":"#6b7a8f","VERY LIGHT":"#5aa9ff","LIGHT":"#00c8b4","MODERATE":"#f0a500","HEAVY":"#f06a40","VERY HEAVY":"#f04060","EXTREME":"#f04060"};
+function rainBandOf(mm){return mm<0.1?"DRY":mm<2.5?"VERY LIGHT":mm<15.6?"LIGHT":mm<64.5?"MODERATE":mm<115.6?"HEAVY":mm<204.5?"VERY HEAVY":"EXTREME";}
+function hasRain(c){return c.r24!==null||c.rn24!==null;}
+function bandFor(c){return c.rband&&RAIN_CLR[c.rband]?c.rband:rainBandOf(Math.max(c.r24||0,c.rn24||0));}
+function rainChip(b){const col=RAIN_CLR[b]||RAIN_CLR.DRY;return `<span class="rain-chip" style="color:${col}">${b}</span>`;}
+function isStorm(c){return c.wcode===95||c.wcode===96||c.wcode===99;}
+function rainLine(c){
+  if(!hasRain(c))return `Rain <span>${c.rain} mm</span>`;
+  return `Rain <span>${(c.r24||0).toFixed(1)} mm/24h</span> · Next 24h <span>${(c.rn24||0).toFixed(1)} mm</span>`+(c.rprob!==null?` · <span>${c.rprob}%</span> chance`:"")+(isStorm(c)?" · <span>⚡ storm</span>":"");
+}
+function rainCell(c){
+  if(!hasRain(c))return `${c.rain}`;
+  return `${(c.r24||0).toFixed(1)} <span style="margin-left:4px">${rainChip(bandFor(c))}</span>`;
+}
+function renderRainChart(cities){
+  const el=document.getElementById("rain-chart");if(!el)return;
+  if(!cities.some(hasRain)){el.innerHTML=`<div class="rain-empty" style="padding:0 0 1rem">Rain forecast data will appear after the next pipeline run.</div>`;return;}
+  const list=[...cities].sort((a,b)=>Math.max(b.r24||0,b.rn24||0)-Math.max(a.r24||0,a.rn24||0));
+  const mx=Math.max(10,...list.map(c=>Math.max(c.r24||0,c.rn24||0)));
+  el.innerHTML=list.map(c=>{
+    const nm=c.city.length>11?c.city.slice(0,10)+"…":c.city;
+    const p=Math.round(((c.r24||0)/mx)*100),n=Math.round(((c.rn24||0)/mx)*100);
+    return `<div class="rain-row"><span class="bar-city">${nm}</span>
+      <div class="rain-bars"><div class="bar-track"><div class="rain-fill past" style="width:${p}%"></div></div><div class="bar-track"><div class="rain-fill next" style="width:${n}%"></div></div></div>
+      <div class="rain-meta">${hasRain(c)?`<span><b>${(c.r24||0).toFixed(1)}</b> / <b>${(c.rn24||0).toFixed(1)}</b> mm</span>${c.rprob!==null?`<span>${c.rprob}%</span>`:""}${isStorm(c)?"<span>⚡</span>":""}${rainChip(bandFor(c))}`:`<span style="color:var(--tm)">no forecast data yet</span>`}</div></div>`;
+  }).join("");
+}
+
 async function loadData(){
   try{
     const r=await fetch(DATA_URL);const t=await r.text();
@@ -348,7 +397,8 @@ async function loadData(){
       const city=String(c[1].v).trim();if(!isCity(city))return;
       const wind=parseFloat(c[2]?.v)||0,temp=parseFloat(c[3]?.v)||0,rain=parseFloat(c[4]?.v)||0;
       const risk=(c[5]?.v||"NORMAL").toUpperCase(),ts=c[7]?.v||"";
-      cm[city]={city,wind,temp,rain,risk,ts};
+      const nv=i=>{const n=parseFloat(c[i]?.v);return Number.isFinite(n)?n:null;};
+      cm[city]={city,wind,temp,rain,risk,ts,r24:nv(8),rn6:nv(9),rn24:nv(10),rprob:nv(11),rband:String(c[12]?.v||"").toUpperCase(),wcode:nv(13)};
       if(ts){const d=new Date(ts);if(d>=cut){const ds=ts.slice(0,10);if(!hm[city])hm[city]={};if(!hm[city][ds])hm[city][ds]=[];hm[city][ds].push(wind);}}
     });
     hist={};
@@ -375,16 +425,18 @@ async function loadData(){
     if(!alerts.length){
       ae.innerHTML=`<div class="no-alerts"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>All 9 coastal cities currently clear</div>`;
     }else{
-      ae.innerHTML=`<div class="alerts-grid">${alerts.map((a,i)=>{const cl={WATCH:"watch",WARNING:"warning",EMERGENCY:"emergency"}[a.risk]||"watch";return `<div class="alert-card ${cl}" style="animation-delay:${i*60}ms"><div><div class="alert-city">${a.city}</div><div class="alert-meta">Wind <span>${a.wind.toFixed(1)} km/h</span> · Temp <span>${a.temp.toFixed(1)}°C</span><br>Rain <span>${a.rain} mm</span></div></div>${badge(a.risk)}</div>`;}).join("")}</div>`;
+      ae.innerHTML=`<div class="alerts-grid">${alerts.map((a,i)=>{const cl={WATCH:"watch",WARNING:"warning",EMERGENCY:"emergency"}[a.risk]||"watch";return `<div class="alert-card ${cl}" style="animation-delay:${i*60}ms"><div><div class="alert-city">${a.city}</div><div class="alert-meta">Wind <span>${a.wind.toFixed(1)} km/h</span> · Temp <span>${a.temp.toFixed(1)}°C</span><br>${rainLine(a)}</div></div>${badge(a.risk)}</div>`;}).join("")}</div>`;
     }
 
     const tc=sorted.map(c=>c.city).filter(c=>hist[c]&&hist[c].length);
     document.getElementById("city-selector").innerHTML=tc.map(city=>`<button class="city-btn" data-city="${city}" onclick="renderTrend('${city}')">${city}</button>`).join("");
     if(!sel||!hist[sel])sel=tc[0];
 
-    document.getElementById("city-table").innerHTML=sorted.map(c=>`<tr><td>${c.city}</td><td>${c.wind.toFixed(1)}</td><td>${c.temp.toFixed(1)}°</td><td>${c.rain}</td><td>${badge(c.risk)}</td><td class="${c.risk==="NORMAL"?"sc":"sa"}">${c.risk==="NORMAL"?"Clear":"Alert"}</td></tr>`).join("");
+    document.getElementById("city-table").innerHTML=sorted.map(c=>`<tr><td>${c.city}</td><td>${c.wind.toFixed(1)}</td><td>${c.temp.toFixed(1)}°</td><td>${rainCell(c)}</td><td>${badge(c.risk)}</td><td class="${c.risk==="NORMAL"?"sc":"sa"}">${c.risk==="NORMAL"?"Clear":"Alert"}</td></tr>`).join("");
 
     document.getElementById("bar-chart").innerHTML=sorted.map(c=>{const pct=Math.round((c.wind/mw)*100);const col=BAR_CLR[c.risk]||BAR_CLR.NORMAL;const nm=c.city.length>11?c.city.slice(0,10)+"…":c.city;return `<div class="bar-row"><span class="bar-city">${nm}</span><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${col};color:${col}"></div></div><span class="bar-val">${c.wind.toFixed(1)}</span></div>`;}).join("");
+
+    renderRainChart(cities);
 
     const ots=document.getElementById("og-timestamp");if(ots)ots.textContent=`Updated ${ts}`;
     document.getElementById("og-loading").style.display="none";
