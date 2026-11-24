@@ -107,7 +107,7 @@
 })();
 
 /* ── RAG CONFIG ── */
-var RAG_WEBHOOK = "https://urjasagar.app.n8n.cloud/webhook/oceanguard-query";
+var RAG_WEBHOOK = "https://jankiai.app.n8n.cloud/webhook/oceanguard-query";
 
 /* ── MODAL CONTROLS ── */
 function openRagModal(){
