@@ -230,9 +230,9 @@ async function ragSubmit(){
     var display = "";
 
     if(errMsg.includes("Failed to fetch") || errMsg.includes("NetworkError") || errMsg.includes("CORS")){
-      display = "<strong>Network / CORS error.</strong><br>"
-              + "The browser blocked the request. In your n8n Respond to Webhook node, "
-              + "add a response header: <code>Access-Control-Allow-Origin: *</code>";
+      display = "<strong>Could not reach the workflow.</strong><br>"
+              + "The request never got a valid response. Check that the webhook URL is the "
+              + "<em>Production</em> URL, the workflow is Active, and see n8n Executions for errors.";
 
     } else if(errMsg.includes("not active") || httpStatus === 404){
       display = "<strong>Workflow not active.</strong><br>"
